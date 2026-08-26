@@ -38,7 +38,7 @@
     .event-card img{display:block;width:100%;height:auto;background:#eef2f6}
     .event-body{padding:14px}
     .event-title{font-size:18px;font-weight:800;color:var(--navy);margin:0}
-    .event-date{font-size:13px;color:var(--muted);margin:5px 0 0}
+    .event-date{font-size:13px;color:var(--muted);margin:5px 0 0}.event-meta{font-size:13px;color:var(--muted);margin:5px 0 0}
     .loading,.empty{padding:28px 8px;text-align:center;color:var(--muted)}
     @media(max-width:420px){.grid{grid-template-columns:1fr}.card{min-height:105px}}
   </style>
@@ -152,10 +152,56 @@ async function openEvents(){
         body.appendChild(d);
       }
 
-      if(ev.calendarUrl){
+      if(ev.startTime || ev.endTime){
+        const tm=document.createElement('p');
+        tm.className='event-meta';
+        tm.textContent=[ev.startTime,ev.endTime].filter(Boolean).join(' – ');
+        body.appendChild(tm);
+      }
+
+      if(ev.location){
+        const loc=document.createElement('p');
+        loc.className='event-meta';
+        loc.textContent='📍 '+ev.location;
+        body.appendChild(loc);
+      }
+
+      function parseEventDate(dateISO, timeText){
+        if(!dateISO) return null;
+        const dateParts=dateISO.split('-').map(Number);
+        if(dateParts.length!==3) return null;
+        let h=0,m=0;
+        if(timeText){
+          const match=String(timeText).trim().match(/^(\\d{{1,2}}):(\\d{{2}})\\s*(AM|PM)?$/i);
+          if(match){
+            h=Number(match[1]); m=Number(match[2]);
+            const ap=(match[3]||'').toUpperCase();
+            if(ap==='PM' && h<12) h+=12;
+            if(ap==='AM' && h===12) h=0;
+          }
+        }
+        return new Date(dateParts[0],dateParts[1]-1,dateParts[2],h,m,0);
+      }
+
+      function googleDate(d){
+        const pad=n=>String(n).padStart(2,'0');
+        return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+'00';
+      }
+
+      const start=parseEventDate(ev.dateISO,ev.startTime);
+      const end=parseEventDate(ev.dateISO,ev.endTime || ev.startTime);
+      if(start){
+        if(end && end<=start) end.setHours(end.getHours()+1);
+        const params=new URLSearchParams({
+          action:'TEMPLATE',
+          text:ev.title || 'Rise Up Event',
+          dates:googleDate(start)+'/'+googleDate(end || new Date(start.getTime()+60*60*1000)),
+          location:ev.location || '',
+          details:'Rise Up Youth Group · Resurrection Catholic Church'
+        });
         const a=document.createElement('a');
         a.className='calendar-btn';
-        a.href=ev.calendarUrl;
+        a.href='https://calendar.google.com/calendar/render?'+params.toString();
         a.target='_blank';
         a.rel='noopener';
         a.textContent='ADD TO CALENDAR';
