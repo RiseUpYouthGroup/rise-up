@@ -57,7 +57,7 @@
   <button class="card" id="events"><div class="icon">◷</div><div class="title">Upcoming Events</div><div class="desc">Meetings, Masses & activities</div></button>
   <button class="card" id="steubenville"><div class="icon">★</div><div class="title">Steubenville</div><div class="desc">Conference information & updates</div></button>
   <button class="card" id="fundraisers"><div class="icon">◎</div><div class="title">Fundraisers</div><div class="desc">Campaigns & opportunities</div></button>
-  <button class="card" data-title="Donations" data-text="This section will link only to the official Resurrection Catholic Church donation system."><div class="icon">♡</div><div class="title">Donations</div><div class="desc">Support Rise Up</div></button>
+  <button class="card" id="donations"><div class="icon">♡</div><div class="title">Donations</div><div class="desc">Support Rise Up</div></button>
   <button class="card" data-title="Contact Us" data-text="Rise Up ministry team contact information will be added here."><div class="icon">✉</div><div class="title">Contact Us</div><div class="desc">Reach the ministry team</div></button>
 </section>
 <div class="footer">RISE UP Youth Group · Resurrection Catholic Church</div>
@@ -70,6 +70,19 @@
   <p>See what's coming up at Rise Up.</p>
   <div id="events-list" class="event-list"><div class="loading">Loading events…</div></div>
   <button class="close" data-close="events-modal">Close</button>
+</div></div>
+
+<div id="donations-modal" class="modal"><div class="sheet">
+  <div style="text-align:center;padding:18px 8px 10px">
+    <h2 style="font-size:28px;margin:0 0 8px">DONATIONS</h2>
+    <p style="margin:0 0 18px">Support Rise Up Youth Group</p>
+    <h3 style="color:var(--navy);margin:0 0 14px">Donate with Zelle</h3>
+    <img src="zelle-qr.png" alt="Zelle QR code for Rise Up Youth Group donations" style="display:block;width:min(310px,82vw);height:auto;margin:0 auto 18px;border-radius:12px">
+    <p style="font-size:13px;line-height:1.5;margin:0 auto 12px;max-width:520px">For your convenience, Zelle donations are collected through the account of one of our Youth Ministry team members, with the authorization of Resurrection Catholic Church.</p>
+    <p style="font-size:15px;margin:12px 0 6px"><strong>Zelle recipient: Joao Anna</strong></p>
+    <p style="font-size:12px;margin:0 auto 12px">Please confirm the recipient's name before sending your donation.</p>
+  </div>
+  <button class="close" data-close="donations-modal">← Back</button>
 </div></div>
 
 <div id="fund-modal" class="modal"><div class="sheet">
@@ -121,6 +134,7 @@ const joinModal=document.getElementById('join-modal');
 const eventsModal=document.getElementById('events-modal');
 const steubModal=document.getElementById('steub-modal');
 const fundModal=document.getElementById('fund-modal');
+const donationsModal=document.getElementById('donations-modal');
 
 document.querySelectorAll('[data-title]').forEach(btn=>btn.addEventListener('click',()=>{
   document.getElementById('info-title').textContent=btn.dataset.title;
@@ -131,6 +145,7 @@ document.querySelectorAll('[data-title]').forEach(btn=>btn.addEventListener('cli
 document.getElementById('join').addEventListener('click',()=>joinModal.classList.add('open'));
 document.getElementById('steubenville').addEventListener('click',()=>steubModal.classList.add('open'));
 document.getElementById('fundraisers').addEventListener('click',()=>fundModal.classList.add('open'));
+document.getElementById('donations').addEventListener('click',()=>donationsModal.classList.add('open'));
 
 async function openEvents(){
   const list=document.getElementById('events-list');
@@ -260,7 +275,7 @@ document.getElementById('view-events').addEventListener('click',()=>{
   openEvents();
 });
 
-[infoModal,joinModal,eventsModal,steubModal,fundModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+[infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body></html>
