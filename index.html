@@ -57,6 +57,11 @@
   <p class="tagline">Faith · Friendship · Service</p>
 </header>
 <a class="checkin" href="https://forms.gle/G9z3biqdehQyaZwX8" target="_blank" rel="noopener">CHECK IN<span>I'm here for today's meeting</span></a>
+<button id="install-app" type="button" style="display:block;width:100%;margin-top:12px;border:1px solid var(--border);border-radius:16px;padding:15px;background:#fff;color:var(--navy);font-size:15px;font-weight:800;text-align:center;cursor:pointer">
+  ADD RISE UP TO YOUR PHONE
+  <span style="display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:4px">Create an app icon on your Home Screen</span>
+</button>
+
 
 <section class="grid">
   <button class="card" id="join"><div class="icon">＋</div><div class="title">Join Rise Up</div><div class="desc">Become part of our Youth Group</div></button>
@@ -70,6 +75,32 @@
 </section>
 <div class="footer">RISE UP Youth Group · Resurrection Catholic Church</div>
 </main>
+
+<div id="install-modal" class="modal"><div class="sheet">
+  <h2>Add Rise Up to Your Phone</h2>
+  <div id="install-content">
+    <p id="install-message">You can save Rise Up to your Home Screen so it opens like an app.</p>
+
+    <div id="ios-steps" class="hidden">
+      <p><strong>On iPhone:</strong></p>
+      <p>1. Open this site in Safari.<br>
+      2. Tap the Share button.<br>
+      3. Scroll down and tap <strong>Add to Home Screen</strong>.<br>
+      4. Tap <strong>Add</strong>.</p>
+    </div>
+
+    <div id="android-steps" class="hidden">
+      <p><strong>On Android:</strong></p>
+      <p>Tap <strong>Install</strong> below. If the button is unavailable, open the browser menu and choose <strong>Add to Home screen</strong> or <strong>Install app</strong>.</p>
+      <button id="android-install-confirm" type="button" class="submit">INSTALL</button>
+    </div>
+
+    <div id="desktop-steps" class="hidden">
+      <p>Open this site on your phone to add the Rise Up icon to your Home Screen.</p>
+    </div>
+  </div>
+  <button class="close" data-close="install-modal">← Back</button>
+</div></div>
 
 <div id="info-modal" class="modal"><div class="sheet"><h2 id="info-title"></h2><p id="info-text"></p><button class="close" data-close="info-modal">Close</button></div></div>
 
@@ -258,6 +289,56 @@ const fundModal=document.getElementById('fund-modal');
 const donationsModal=document.getElementById('donations-modal');
 const knowModal=document.getElementById('know-modal');
 const documentsModal=document.getElementById('documents-modal');
+const installModal=document.getElementById('install-modal');
+
+
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+});
+
+function isIos(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+function isAndroid(){
+  return /android/i.test(navigator.userAgent);
+}
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+document.getElementById('install-app').addEventListener('click',()=>{
+  const ios=document.getElementById('ios-steps');
+  const android=document.getElementById('android-steps');
+  const desktop=document.getElementById('desktop-steps');
+  const msg=document.getElementById('install-message');
+  ios.classList.add('hidden'); android.classList.add('hidden'); desktop.classList.add('hidden');
+
+  if(isStandalone()){
+    msg.textContent='Rise Up is already installed on this device.';
+  }else if(isIos()){
+    msg.textContent='Follow these steps to create the Rise Up icon on your Home Screen.';
+    ios.classList.remove('hidden');
+  }else if(isAndroid()){
+    msg.textContent='Install Rise Up so it opens like an app.';
+    android.classList.remove('hidden');
+  }else{
+    msg.textContent='Open this site on your phone to add Rise Up to your Home Screen.';
+    desktop.classList.remove('hidden');
+  }
+  installModal.classList.add('open');
+});
+
+document.getElementById('android-install-confirm').addEventListener('click',async()=>{
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt=null;
+  }else{
+    document.getElementById('install-message').textContent='Use your browser menu and choose “Add to Home screen” or “Install app”.';
+  }
+});
 
 document.querySelectorAll('[data-title]').forEach(btn=>btn.addEventListener('click',()=>{
   document.getElementById('info-title').textContent=btn.dataset.title;
@@ -443,7 +524,7 @@ document.getElementById('view-events').addEventListener('click',()=>{
   openEvents();
 });
 
-[infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+[infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal,installModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body></html>
