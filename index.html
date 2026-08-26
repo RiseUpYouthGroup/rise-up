@@ -56,7 +56,7 @@
   <button class="card" id="join"><div class="icon">＋</div><div class="title">Join Rise Up</div><div class="desc">Become part of our Youth Group</div></button>
   <button class="card" id="events"><div class="icon">◷</div><div class="title">Upcoming Events</div><div class="desc">Meetings, Masses & activities</div></button>
   <button class="card" id="steubenville"><div class="icon">★</div><div class="title">Steubenville</div><div class="desc">Conference information & updates</div></button>
-  <button class="card" data-title="Fundraisers" data-text="Current fundraisers and volunteer opportunities can be listed here."><div class="icon">◎</div><div class="title">Fundraisers</div><div class="desc">Campaigns & opportunities</div></button>
+  <button class="card" id="fundraisers"><div class="icon">◎</div><div class="title">Fundraisers</div><div class="desc">Campaigns & opportunities</div></button>
   <button class="card" data-title="Donations" data-text="This section will link only to the official Resurrection Catholic Church donation system."><div class="icon">♡</div><div class="title">Donations</div><div class="desc">Support Rise Up</div></button>
   <button class="card" data-title="Contact Us" data-text="Rise Up ministry team contact information will be added here."><div class="icon">✉</div><div class="title">Contact Us</div><div class="desc">Reach the ministry team</div></button>
 </section>
@@ -70,6 +70,14 @@
   <p>See what's coming up at Rise Up.</p>
   <div id="events-list" class="event-list"><div class="loading">Loading events…</div></div>
   <button class="close" data-close="events-modal">Close</button>
+</div></div>
+
+<div id="fund-modal" class="modal"><div class="sheet">
+  <div style="text-align:center;padding:38px 12px 28px">
+    <h2 style="font-size:28px;margin:0 0 14px">FUNDRAISERS</h2>
+    <p style="font-style:italic;margin:0">More information will be available soon.</p>
+  </div>
+  <button class="close" data-close="fund-modal">← Back</button>
 </div></div>
 
 <div id="steub-modal" class="modal"><div class="sheet">
@@ -112,6 +120,7 @@ const infoModal=document.getElementById('info-modal');
 const joinModal=document.getElementById('join-modal');
 const eventsModal=document.getElementById('events-modal');
 const steubModal=document.getElementById('steub-modal');
+const fundModal=document.getElementById('fund-modal');
 
 document.querySelectorAll('[data-title]').forEach(btn=>btn.addEventListener('click',()=>{
   document.getElementById('info-title').textContent=btn.dataset.title;
@@ -121,6 +130,7 @@ document.querySelectorAll('[data-title]').forEach(btn=>btn.addEventListener('cli
 
 document.getElementById('join').addEventListener('click',()=>joinModal.classList.add('open'));
 document.getElementById('steubenville').addEventListener('click',()=>steubModal.classList.add('open'));
+document.getElementById('fundraisers').addEventListener('click',()=>fundModal.classList.add('open'));
 
 async function openEvents(){
   const list=document.getElementById('events-list');
@@ -250,7 +260,7 @@ document.getElementById('view-events').addEventListener('click',()=>{
   openEvents();
 });
 
-[infoModal,joinModal,eventsModal,steubModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+[infoModal,joinModal,eventsModal,steubModal,fundModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body></html>
