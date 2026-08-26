@@ -28,7 +28,7 @@
     .sheet h2{margin:0 0 8px;font-size:22px;color:var(--navy)} .sheet p{color:var(--muted);line-height:1.5}
     label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}
     input,select{width:100%;padding:13px;border:1px solid var(--border);border-radius:11px;font-size:16px;background:#fff}
-    .submit,.events-btn,.calendar-btn{width:100%;margin-top:18px;padding:14px;border:0;border-radius:12px;background:var(--navy);color:#fff;font-weight:800;font-size:16px;text-decoration:none;display:block;text-align:center}
+    .submit,.events-btn,.calendar-btn,.rsvp-btn{width:100%;margin-top:18px;padding:14px;border:0;border-radius:12px;background:var(--navy);color:#fff;font-weight:800;font-size:16px;text-decoration:none;display:block;text-align:center}
     .close{margin-top:10px;width:100%;padding:13px;border-radius:12px;border:1px solid var(--border);background:#fff;font-weight:700}
     .notice{font-size:12px!important;color:var(--muted);background:#f7f8fa;border-radius:10px;padding:10px}
     .success{text-align:center;padding:10px 0} .success h3{color:var(--navy);font-size:24px;margin-bottom:8px}
@@ -179,6 +179,33 @@
 </div></div>
 
 <div id="info-modal" class="modal"><div class="sheet"><h2 id="info-title"></h2><p id="info-text"></p><button class="close" data-close="info-modal">Close</button></div></div>
+
+<div id="rsvp-modal" class="modal"><div class="sheet">
+  <div id="rsvp-form-wrap">
+    <h2 id="rsvp-title">Confirm Your Presence</h2>
+    <p id="rsvp-event-name" style="font-weight:700;color:var(--navy);margin-top:4px"></p>
+
+    <form id="rsvp-form">
+      <input type="hidden" id="rsvp-event" name="event">
+
+      <label for="rsvp-firstName" id="rsvp-first-label">First Name</label>
+      <input id="rsvp-firstName" name="firstName" required maxlength="50" autocomplete="given-name">
+
+      <label for="rsvp-lastName" id="rsvp-last-label">Last Name</label>
+      <input id="rsvp-lastName" name="lastName" required maxlength="50" autocomplete="family-name">
+
+      <button class="submit" id="rsvp-submit" type="submit">CONFIRM</button>
+      <p id="rsvp-status" aria-live="polite"></p>
+    </form>
+
+    <button class="close" data-close="rsvp-modal" id="rsvp-cancel">Cancel</button>
+  </div>
+
+  <div id="rsvp-success" class="success hidden">
+    <h3 id="rsvp-success-title">Your presence has been confirmed!</h3>
+    <button class="close" data-close="rsvp-modal" id="rsvp-success-close">Close</button>
+  </div>
+</div></div>
 
 <div id="events-modal" class="modal"><div class="sheet">
   <h2>Upcoming Events</h2>
@@ -354,6 +381,7 @@
 </div></div>
 
 <script>
+const RSVP_ENDPOINT="https://script.google.com/macros/s/AKfycbyB2WlrXvP-NtkIPgKGP0XHu1ElK5eAX-9ilzTzBEUDFoa4qHQpPFJe49cuacq9QBVj5A/exec";
 const PARENT_REGISTRATION_ENDPOINT="https://script.google.com/macros/s/AKfycbymMIb-Xx8vnI6ztplUhMBr1mllIX5dvHQsp2xMKF-sDN18yuDe9AR0nhE1geXHzs8W5g/exec";
 const REGISTRATION_ENDPOINT="https://script.google.com/macros/s/AKfycbxpMpuI1BestZoycYi_XAowI7-nsWoP4y6r7FRWxUKuZTa7dtmvRrtCf0dCiCcGYl9n/exec";
 const KNOW_YOU_ENDPOINT="https://script.google.com/macros/s/AKfycbyQ9CH6VVezlDz6ZGXh_cP9wclhlr7HAzX-xGB8L37LdklD41RbtPgz8lVwcoKiUhL8/exec";
@@ -369,6 +397,7 @@ const documentsModal=document.getElementById('documents-modal');
 const installModal=document.getElementById('install-modal');
 const parentRegisterModal=document.getElementById('parent-register-modal');
 const updatesModal=document.getElementById('updates-modal');
+const rsvpModal=document.getElementById('rsvp-modal');
 
 
 
@@ -768,6 +797,93 @@ document.getElementById('fundraisers').addEventListener('click',()=>fundModal.cl
 document.getElementById('donations').addEventListener('click',()=>donationsModal.classList.add('open'));
 document.getElementById('documents').addEventListener('click',()=>documentsModal.classList.add('open'));
 
+
+function rsvpText(){
+  const lang=window.riseUpLang || 'en';
+  const t={
+    en:{
+      button:'CONFIRM YOUR PRESENCE',
+      title:'Confirm Your Presence',
+      first:'First Name',
+      last:'Last Name',
+      confirm:'CONFIRM',
+      cancel:'Cancel',
+      success:'Your presence has been confirmed!',
+      close:'Close',
+      sending:'CONFIRMING...',
+      error:'We could not confirm your presence. Please try again.'
+    },
+    pt:{
+      button:'CONFIRMAR SUA PRESENÇA',
+      title:'Confirme sua Presença',
+      first:'Nome',
+      last:'Sobrenome',
+      confirm:'CONFIRMAR',
+      cancel:'Cancelar',
+      success:'Sua presença foi confirmada!',
+      close:'Fechar',
+      sending:'CONFIRMANDO...',
+      error:'Não foi possível confirmar sua presença. Tente novamente.'
+    },
+    es:{
+      button:'CONFIRMAR TU ASISTENCIA',
+      title:'Confirma tu Asistencia',
+      first:'Nombre',
+      last:'Apellido',
+      confirm:'CONFIRMAR',
+      cancel:'Cancelar',
+      success:'¡Tu asistencia ha sido confirmada!',
+      close:'Cerrar',
+      sending:'CONFIRMANDO...',
+      error:'No pudimos confirmar tu asistencia. Inténtalo de nuevo.'
+    }
+  };
+  return t[lang] || t.en;
+}
+
+function openRsvp(eventName){
+  const t=rsvpText();
+  document.getElementById('rsvp-title').textContent=t.title;
+  document.getElementById('rsvp-first-label').textContent=t.first;
+  document.getElementById('rsvp-last-label').textContent=t.last;
+  document.getElementById('rsvp-submit').textContent=t.confirm;
+  document.getElementById('rsvp-cancel').textContent=t.cancel;
+  document.getElementById('rsvp-success-title').textContent=t.success;
+  document.getElementById('rsvp-success-close').textContent=t.close;
+
+  document.getElementById('rsvp-event').value=eventName;
+  document.getElementById('rsvp-event-name').textContent=eventName;
+  document.getElementById('rsvp-status').textContent='';
+  document.getElementById('rsvp-form-wrap').classList.remove('hidden');
+  document.getElementById('rsvp-success').classList.add('hidden');
+  document.getElementById('rsvp-form').reset();
+  document.getElementById('rsvp-event').value=eventName;
+  rsvpModal.classList.add('open');
+}
+
+document.getElementById('rsvp-form').addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const t=rsvpText();
+  const btn=document.getElementById('rsvp-submit');
+  const status=document.getElementById('rsvp-status');
+  btn.disabled=true;
+  btn.textContent=t.sending;
+  status.textContent='';
+
+  try{
+    const body=new URLSearchParams(new FormData(e.target));
+    await fetch(RSVP_ENDPOINT,{method:'POST',body,mode:'no-cors'});
+    document.getElementById('rsvp-form-wrap').classList.add('hidden');
+    document.getElementById('rsvp-success').classList.remove('hidden');
+  }catch(err){
+    status.textContent=t.error;
+  }finally{
+    btn.disabled=false;
+    btn.textContent=t.confirm;
+  }
+});
+
+
 async function openEvents(){
   const list=document.getElementById('events-list');
   eventsModal.classList.add('open');
@@ -842,6 +958,17 @@ async function openEvents(){
       function googleDate(d){
         const pad=n=>String(n).padStart(2,'0');
         return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+'00';
+      }
+
+
+      // RSVP is intentionally available only in the Teen view.
+      if(!document.body.classList.contains('parent-mode')){
+        const rsvp=document.createElement('button');
+        rsvp.type='button';
+        rsvp.className='rsvp-btn';
+        rsvp.textContent=rsvpText().button;
+        rsvp.addEventListener('click',()=>openRsvp(ev.title || 'Rise Up Event'));
+        body.appendChild(rsvp);
       }
 
       const start=parseEventDate(ev.dateISO,ev.startTime);
@@ -939,7 +1066,7 @@ document.getElementById('view-events').addEventListener('click',()=>{
   openEvents();
 });
 
-[infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal,installModal,parentRegisterModal,updatesModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+[infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal,installModal,parentRegisterModal,updatesModal,rsvpModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body></html>
