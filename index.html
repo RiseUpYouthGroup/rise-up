@@ -28,11 +28,18 @@
     .sheet h2{margin:0 0 8px;font-size:22px;color:var(--navy)} .sheet p{color:var(--muted);line-height:1.5}
     label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}
     input,select{width:100%;padding:13px;border:1px solid var(--border);border-radius:11px;font-size:16px;background:#fff}
-    .submit,.events-btn{width:100%;margin-top:18px;padding:14px;border:0;border-radius:12px;background:var(--navy);color:#fff;font-weight:800;font-size:16px}
+    .submit,.events-btn,.calendar-btn{width:100%;margin-top:18px;padding:14px;border:0;border-radius:12px;background:var(--navy);color:#fff;font-weight:800;font-size:16px;text-decoration:none;display:block;text-align:center}
     .close{margin-top:10px;width:100%;padding:13px;border-radius:12px;border:1px solid var(--border);background:#fff;font-weight:700}
     .notice{font-size:12px!important;color:var(--muted);background:#f7f8fa;border-radius:10px;padding:10px}
     .success{text-align:center;padding:10px 0} .success h3{color:var(--navy);font-size:24px;margin-bottom:8px}
     .hidden{display:none}
+    .event-list{display:grid;gap:16px;margin-top:14px}
+    .event-card{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:#fff}
+    .event-card img{display:block;width:100%;height:auto;background:#eef2f6}
+    .event-body{padding:14px}
+    .event-title{font-size:18px;font-weight:800;color:var(--navy);margin:0}
+    .event-date{font-size:13px;color:var(--muted);margin:5px 0 0}
+    .loading,.empty{padding:28px 8px;text-align:center;color:var(--muted)}
     @media(max-width:420px){.grid{grid-template-columns:1fr}.card{min-height:105px}}
   </style>
 </head>
@@ -47,7 +54,7 @@
 
 <section class="grid">
   <button class="card" id="join"><div class="icon">＋</div><div class="title">Join Rise Up</div><div class="desc">Become part of our Youth Group</div></button>
-  <button class="card" data-title="Upcoming Events" data-text="Meetings, Youth Masses, dinners, service opportunities and other events will appear here."><div class="icon">◷</div><div class="title">Upcoming Events</div><div class="desc">Meetings, Masses & activities</div></button>
+  <button class="card" id="events"><div class="icon">◷</div><div class="title">Upcoming Events</div><div class="desc">Meetings, Masses & activities</div></button>
   <button class="card" data-title="Steubenville" data-text="Registration, payments, meetings, travel information and conference updates can be organized here."><div class="icon">★</div><div class="title">Steubenville</div><div class="desc">Conference information & updates</div></button>
   <button class="card" data-title="Fundraisers" data-text="Current fundraisers and volunteer opportunities can be listed here."><div class="icon">◎</div><div class="title">Fundraisers</div><div class="desc">Campaigns & opportunities</div></button>
   <button class="card" data-title="Donations" data-text="This section will link only to the official Resurrection Catholic Church donation system."><div class="icon">♡</div><div class="title">Donations</div><div class="desc">Support Rise Up</div></button>
@@ -57,6 +64,13 @@
 </main>
 
 <div id="info-modal" class="modal"><div class="sheet"><h2 id="info-title"></h2><p id="info-text"></p><button class="close" data-close="info-modal">Close</button></div></div>
+
+<div id="events-modal" class="modal"><div class="sheet">
+  <h2>Upcoming Events</h2>
+  <p>See what's coming up at Rise Up.</p>
+  <div id="events-list" class="event-list"><div class="loading">Loading events…</div></div>
+  <button class="close" data-close="events-modal">Close</button>
+</div></div>
 
 <div id="join-modal" class="modal"><div class="sheet">
   <div id="join-form-wrap">
@@ -84,18 +98,87 @@
 </div></div>
 
 <script>
-const ENDPOINT="https://script.google.com/macros/s/AKfycbxpMpuI1BestZoycYi_XAowI7-nsWoP4y6r7FRWxUKuZTa7dtmvRrtCf0dCiCcGYl9n/exec";
-const infoModal=document.getElementById('info-modal'), joinModal=document.getElementById('join-modal');
-document.querySelectorAll('[data-title]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('info-title').textContent=btn.dataset.title;document.getElementById('info-text').textContent=btn.dataset.text;infoModal.classList.add('open')}));
+const REGISTRATION_ENDPOINT="https://script.google.com/macros/s/AKfycbxpMpuI1BestZoycYi_XAowI7-nsWoP4y6r7FRWxUKuZTa7dtmvRrtCf0dCiCcGYl9n/exec";
+const EVENTS_ENDPOINT="https://script.google.com/macros/s/AKfycbwRYP8QRmWSUH-SYIHnK6XsFQIBVkdcSa2RyqYjd7EK46um4Fr2uE5q0B674ncmtPsU/exec";
+const infoModal=document.getElementById('info-modal');
+const joinModal=document.getElementById('join-modal');
+const eventsModal=document.getElementById('events-modal');
+
+document.querySelectorAll('[data-title]').forEach(btn=>btn.addEventListener('click',()=>{
+  document.getElementById('info-title').textContent=btn.dataset.title;
+  document.getElementById('info-text').textContent=btn.dataset.text;
+  infoModal.classList.add('open');
+}));
+
 document.getElementById('join').addEventListener('click',()=>joinModal.classList.add('open'));
+
+async function openEvents(){
+  const list=document.getElementById('events-list');
+  eventsModal.classList.add('open');
+  list.innerHTML='<div class="loading">Loading events…</div>';
+  try {
+    const response=await fetch(EVENTS_ENDPOINT+'?t='+Date.now(),{cache:'no-store'});
+    const data=await response.json();
+    if(!Array.isArray(data)) throw new Error('Invalid response');
+    if(data.length===0){
+      list.innerHTML='<div class="empty">No upcoming events are posted yet.</div>';
+      return;
+    }
+    list.innerHTML='';
+    data.forEach(ev=>{
+      const card=document.createElement('article');
+      card.className='event-card';
+
+      if(ev.imageUrl){
+        const img=document.createElement('img');
+        img.src=ev.imageUrl;
+        img.alt=ev.title ? ev.title+' flyer' : 'Rise Up event flyer';
+        img.loading='lazy';
+        img.onerror=()=>{ img.style.display='none'; };
+        card.appendChild(img);
+      }
+
+      const body=document.createElement('div');
+      body.className='event-body';
+      const h=document.createElement('h3');
+      h.className='event-title';
+      h.textContent=ev.title || 'Rise Up Event';
+      body.appendChild(h);
+
+      if(ev.date){
+        const d=document.createElement('p');
+        d.className='event-date';
+        d.textContent=ev.date;
+        body.appendChild(d);
+      }
+
+      if(ev.calendarUrl){
+        const a=document.createElement('a');
+        a.className='calendar-btn';
+        a.href=ev.calendarUrl;
+        a.target='_blank';
+        a.rel='noopener';
+        a.textContent='ADD TO CALENDAR';
+        body.appendChild(a);
+      }
+      card.appendChild(body);
+      list.appendChild(card);
+    });
+  } catch(err) {
+    list.innerHTML='<div class="empty">Events could not be loaded right now. Please try again.</div>';
+  }
+}
+
+document.getElementById('events').addEventListener('click',openEvents);
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>document.getElementById(b.dataset.close).classList.remove('open')));
+
 document.getElementById('registration-form').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const btn=document.getElementById('submit-btn'), status=document.getElementById('form-status');
   btn.disabled=true; btn.textContent='SUBMITTING...'; status.textContent='';
   try {
     const body=new URLSearchParams(new FormData(e.target));
-    await fetch(ENDPOINT,{method:'POST',body,mode:'no-cors'});
+    await fetch(REGISTRATION_ENDPOINT,{method:'POST',body,mode:'no-cors'});
     document.getElementById('join-form-wrap').classList.add('hidden');
     document.getElementById('success').classList.remove('hidden');
     e.target.reset();
@@ -105,12 +188,13 @@ document.getElementById('registration-form').addEventListener('submit', async (e
     btn.disabled=false; btn.textContent='JOIN RISE UP';
   }
 });
+
 document.getElementById('view-events').addEventListener('click',()=>{
   joinModal.classList.remove('open');
-  document.getElementById('info-title').textContent='Upcoming Events';
-  document.getElementById('info-text').textContent='Meetings, Youth Masses, dinners, service opportunities and other events will appear here.';
-  infoModal.classList.add('open');
+  openEvents();
 });
+
+[infoModal,joinModal,eventsModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body></html>
