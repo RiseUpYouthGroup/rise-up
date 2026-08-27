@@ -187,6 +187,45 @@ window.OneSignalDeferred.push(async function(OneSignal) {
         <option value="">Select grade</option>
         <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
       </select>
+
+      <label for="pr-addTeen2" id="pr-addTeen2-label">Do you have another teen in Rise Up?</label>
+      <select id="pr-addTeen2" name="addTeen2">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+
+      <div id="pr-teen2-wrap" class="hidden">
+        <div class="section-label" id="pr-teen2-title">Teen 2 Information</div>
+        <label for="pr-teen2FirstName" id="pr-teen2First-label">Teen 2 First Name</label>
+        <input id="pr-teen2FirstName" name="teen2FirstName" maxlength="50">
+        <label for="pr-teen2LastName" id="pr-teen2Last-label">Teen 2 Last Name</label>
+        <input id="pr-teen2LastName" name="teen2LastName" maxlength="50">
+        <label for="pr-teen2Grade" id="pr-teen2Grade-label">Teen 2 Grade</label>
+        <select id="pr-teen2Grade" name="teen2Grade">
+          <option value="">Select grade</option>
+          <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
+        </select>
+
+        <label for="pr-addTeen3" id="pr-addTeen3-label">Do you have a third teen in Rise Up?</label>
+        <select id="pr-addTeen3" name="addTeen3">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+
+      <div id="pr-teen3-wrap" class="hidden">
+        <div class="section-label" id="pr-teen3-title">Teen 3 Information</div>
+        <label for="pr-teen3FirstName" id="pr-teen3First-label">Teen 3 First Name</label>
+        <input id="pr-teen3FirstName" name="teen3FirstName" maxlength="50">
+        <label for="pr-teen3LastName" id="pr-teen3Last-label">Teen 3 Last Name</label>
+        <input id="pr-teen3LastName" name="teen3LastName" maxlength="50">
+        <label for="pr-teen3Grade" id="pr-teen3Grade-label">Teen 3 Grade</label>
+        <select id="pr-teen3Grade" name="teen3Grade">
+          <option value="">Select grade</option>
+          <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
+        </select>
+      </div>
+
       <button class="submit" id="parent-submit" type="submit">REGISTER</button>
       <p id="parent-status" aria-live="polite"></p>
     </form>
@@ -861,6 +900,26 @@ setLanguage(savedLang);
 
 document.getElementById('parent-register').addEventListener('click',()=>parentRegisterModal.classList.add('open'));
 document.getElementById('important-updates').addEventListener('click',()=>updatesModal.classList.add('open'));
+
+
+const prAddTeen2=document.getElementById('pr-addTeen2');
+const prAddTeen3=document.getElementById('pr-addTeen3');
+function setOptionalTeenVisibility(){
+  const show2=prAddTeen2 && prAddTeen2.value==='yes';
+  document.getElementById('pr-teen2-wrap')?.classList.toggle('hidden',!show2);
+  ['pr-teen2FirstName','pr-teen2LastName','pr-teen2Grade'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.required=show2;
+  });
+  if(!show2 && prAddTeen3) prAddTeen3.value='no';
+  const show3=show2 && prAddTeen3 && prAddTeen3.value==='yes';
+  document.getElementById('pr-teen3-wrap')?.classList.toggle('hidden',!show3);
+  ['pr-teen3FirstName','pr-teen3LastName','pr-teen3Grade'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.required=show3;
+  });
+}
+prAddTeen2?.addEventListener('change',setOptionalTeenVisibility);
+prAddTeen3?.addEventListener('change',setOptionalTeenVisibility);
+setOptionalTeenVisibility();
 
 document.getElementById('parent-register-form').addEventListener('submit', async (e)=>{
   e.preventDefault();
