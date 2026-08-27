@@ -287,7 +287,7 @@ window.OneSignalDeferred.push(async function(OneSignal) {
     <h2 id="docs-consent-title">ANNUAL PARENTAL CONSENT FORM</h2>
     <p id="docs-consent-sub" style="margin:8px 0 20px">Required for all Rise Up participants</p>
     <a id="docs-download" class="submit" href="consent-en.pdf" download
-       style="display:block;text-decoration:none;text-align:center;margin:0 0 12px">DOWNLOAD FORM</a>
+       style="display:block;text-decoration:none;text-align:center;margin:0 0 12px" target="_blank" rel="noopener">OPEN / PRINT FORM</a>
     <a id="docs-upload" class="submit" href="https://tally.so/r/dWe4Lo" target="_blank" rel="noopener"
        style="display:block;text-decoration:none;text-align:center;margin:0 0 10px">UPLOAD COMPLETED FORM</a>
     <p id="docs-upload-note" style="font-size:12px;color:var(--muted);margin-top:10px">
@@ -1296,9 +1296,9 @@ document.getElementById('view-events').addEventListener('click',()=>{
 function refreshConsentDocument(){
   const lang=window.riseUpLang || 'en';
   const data={
-    en:{title:'ANNUAL PARENTAL CONSENT FORM',sub:'Required for all Rise Up participants',download:'DOWNLOAD FORM',upload:'UPLOAD COMPLETED FORM',note:'Upload your completed and signed form here.',back:'← Back',file:'consent-en.pdf'},
-    es:{title:'FORMULARIO ANUAL DE CONSENTIMIENTO DE LOS PADRES',sub:'Requerido para todos los participantes de Rise Up',download:'DESCARGAR FORMULARIO',upload:'SUBIR FORMULARIO COMPLETO',note:'Sube aquí tu formulario completo y firmado.',back:'← Volver',file:'consent-es.pdf'},
-    pt:{title:'FORMULÁRIO ANUAL DE CONSENTIMENTO DOS PAIS',sub:'Obrigatório para todos os participantes do Rise Up',download:'BAIXAR FORMULÁRIO',upload:'ENVIAR FORMULÁRIO PREENCHIDO',note:'Envie aqui seu formulário preenchido e assinado.',back:'← Voltar',file:'consent-pt.pdf'}
+    en:{title:'ANNUAL PARENTAL CONSENT FORM',sub:'Required for all Rise Up participants',download:'OPEN / PRINT FORM',upload:'UPLOAD COMPLETED FORM',note:'Upload your completed and signed form here.',back:'← Back',file:'consent-en.pdf'},
+    es:{title:'FORMULARIO ANUAL DE CONSENTIMIENTO DE LOS PADRES',sub:'Requerido para todos los participantes de Rise Up',download:'ABRIR / IMPRIMIR FORMULARIO',upload:'SUBIR FORMULARIO COMPLETO',note:'Sube aquí tu formulario completo y firmado.',back:'← Volver',file:'consent-es.pdf'},
+    pt:{title:'FORMULÁRIO ANUAL DE CONSENTIMENTO DOS PAIS',sub:'Obrigatório para todos os participantes do Rise Up',download:'ABRIR / IMPRIMIR FORMULÁRIO',upload:'ENVIAR FORMULÁRIO PREENCHIDO',note:'Envie aqui seu formulário preenchido e assinado.',back:'← Voltar',file:'consent-pt.pdf'}
   };
   const t=data[lang] || data.en;
   const set=(id,val)=>{const el=document.getElementById(id); if(el) el.textContent=val;};
