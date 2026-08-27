@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rise Up Consent Form</title>
+<style>
+  :root{--navy:#183a67;--bg:#eef3f8;--white:#fff;--muted:#5d6877}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#17202b}
+  .toolbar{position:sticky;top:0;z-index:10;background:#fff;padding:12px max(14px,env(safe-area-inset-right)) 12px max(14px,env(safe-area-inset-left));box-shadow:0 2px 10px rgba(0,0,0,.12)}
+  .title{font-weight:800;color:var(--navy);text-align:center;margin:0 0 10px;font-size:17px}
+  .buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:760px;margin:auto}
+  button,a.btn{appearance:none;border:0;border-radius:9px;padding:11px 10px;font-weight:700;font-size:14px;text-decoration:none;text-align:center;cursor:pointer}
+  .primary{background:var(--navy);color:#fff}
+  .secondary{background:#e8edf4;color:var(--navy)}
+  .full{grid-column:1 / -1}
+  .hint{font-size:12px;color:var(--muted);text-align:center;margin:8px 0 0}
+  .pages{max-width:900px;margin:16px auto;padding:0 10px 24px}
+  .pages img{display:block;width:100%;height:auto;background:#fff;margin:0 auto 14px;box-shadow:0 3px 16px rgba(0,0,0,.14)}
+  @media print{
+    .toolbar{display:none!important}
+    body{background:white}
+    .pages{max-width:none;margin:0;padding:0}
+    .pages img{box-shadow:none;margin:0;page-break-after:always;width:100%}
+    .pages img:last-child{page-break-after:auto}
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <div class="title" id="title">Annual Parental Consent Form</div>
+  <div class="buttons">
+    <button class="secondary" id="backBtn" type="button">← Back to Rise Up</button>
+    <button class="primary" id="printBtn" type="button">Print Form</button>
+    <a class="btn secondary full" id="pdfBtn" download>Download PDF</a>
+  </div>
+  <div class="hint" id="hint">Use Print Form to print both pages.</div>
+</div>
+<div class="pages" id="pages"></div>
+
+<script>
+(function(){
+  const q=new URLSearchParams(location.search);
+  const lang=['en','es','pt'].includes(q.get('lang'))?q.get('lang'):'en';
+  const copy={
+    en:{title:'Annual Parental Consent Form',back:'← Back to Rise Up',print:'Print Form',download:'Download PDF',hint:'Use Print Form to print both pages.'},
+    es:{title:'Formulario Anual de Consentimiento de los Padres',back:'← Volver a Rise Up',print:'Imprimir Formulario',download:'Descargar PDF',hint:'Use Imprimir Formulario para imprimir las dos páginas.'},
+    pt:{title:'Formulário Anual de Consentimento dos Pais',back:'← Voltar ao Rise Up',print:'Imprimir Formulário',download:'Baixar PDF',hint:'Use Imprimir Formulário para imprimir as duas páginas.'}
+  }[lang];
+  document.documentElement.lang=lang;
+  document.getElementById('title').textContent=copy.title;
+  document.getElementById('backBtn').textContent=copy.back;
+  document.getElementById('printBtn').textContent=copy.print;
+  document.getElementById('pdfBtn').textContent=copy.download;
+  document.getElementById('hint').textContent=copy.hint;
+  document.getElementById('pdfBtn').href=`consent-${lang}.pdf`;
+
+  const pages=document.getElementById('pages');
+  [1,2].forEach(n=>{
+    const img=document.createElement('img');
+    img.src=`consent-${lang}-page${n}.png`;
+    img.alt=`${copy.title} - page ${n}`;
+    pages.appendChild(img);
+  });
+
+  document.getElementById('printBtn').addEventListener('click',()=>window.print());
+  document.getElementById('backBtn').addEventListener('click',()=>{
+    if(history.length>1) history.back();
+    else location.href='./?open=documents';
+  });
+})();
+</script>
+</body>
+</html>
