@@ -283,11 +283,18 @@ window.OneSignalDeferred.push(async function(OneSignal) {
 </div></div>
 
 <div id="documents-modal" class="modal"><div class="sheet">
-  <div style="text-align:center;padding:38px 12px 28px">
-    <h2 style="font-size:28px;margin:0 0 14px">DOCUMENTS</h2>
-    <p style="font-style:italic;margin:0">No documents are available at this time.</p>
+  <div style="text-align:center;padding:18px 8px 12px">
+    <h2 id="docs-consent-title">ANNUAL PARENTAL CONSENT FORM</h2>
+    <p id="docs-consent-sub" style="margin:8px 0 20px">Required for all Rise Up participants</p>
+    <a id="docs-download" class="submit" href="consent-en.pdf" download
+       style="display:block;text-decoration:none;text-align:center;margin:0 0 12px">DOWNLOAD FORM</a>
+    <button id="docs-upload" type="button" class="submit" disabled
+       style="width:100%;opacity:.55;cursor:not-allowed">UPLOAD COMPLETED FORM</button>
+    <p id="docs-upload-note" style="font-size:12px;color:var(--muted);margin-top:10px">
+      Online upload will be available soon.
+    </p>
   </div>
-  <button class="close" data-close="documents-modal">← Back</button>
+  <button class="close" data-close="documents-modal" id="docs-back">← Back</button>
 </div></div>
 
 <div id="donations-modal" class="modal"><div class="sheet">
@@ -1284,6 +1291,31 @@ document.getElementById('view-events').addEventListener('click',()=>{
 
 [infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal,installModal,parentRegisterModal,updatesModal,rsvpModal,notifyModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 
+
+
+function refreshConsentDocument(){
+  const lang=window.riseUpLang || 'en';
+  const data={
+    en:{title:'ANNUAL PARENTAL CONSENT FORM',sub:'Required for all Rise Up participants',download:'DOWNLOAD FORM',upload:'UPLOAD COMPLETED FORM',note:'Online upload will be available soon.',back:'← Back',file:'consent-en.pdf'},
+    es:{title:'FORMULARIO ANUAL DE CONSENTIMIENTO DE LOS PADRES',sub:'Requerido para todos los participantes de Rise Up',download:'DESCARGAR FORMULARIO',upload:'SUBIR FORMULARIO COMPLETO',note:'La opción de subir el formulario estará disponible próximamente.',back:'← Volver',file:'consent-es.pdf'},
+    pt:{title:'FORMULÁRIO ANUAL DE CONSENTIMENTO DOS PAIS',sub:'Obrigatório para todos os participantes do Rise Up',download:'BAIXAR FORMULÁRIO',upload:'ENVIAR FORMULÁRIO PREENCHIDO',note:'O envio online estará disponível em breve.',back:'← Voltar',file:'consent-pt.pdf'}
+  };
+  const t=data[lang] || data.en;
+  const set=(id,val)=>{const el=document.getElementById(id); if(el) el.textContent=val;};
+  set('docs-consent-title',t.title);
+  set('docs-consent-sub',t.sub);
+  set('docs-download',t.download);
+  set('docs-upload',t.upload);
+  set('docs-upload-note',t.note);
+  set('docs-back',t.back);
+  const dl=document.getElementById('docs-download');
+  if(dl) dl.href=t.file;
+}
+document.getElementById('documents')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
+document.getElementById('lang-en')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
+document.getElementById('lang-pt')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
+document.getElementById('lang-es')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
+window.addEventListener('load',refreshConsentDocument);
 
 function openRiseUpDeepLink(){
   try{
