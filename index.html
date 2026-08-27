@@ -1225,5 +1225,33 @@ document.getElementById('view-events').addEventListener('click',()=>{
 
 [infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal,installModal,parentRegisterModal,updatesModal,rsvpModal,notifyModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 
+
+function openRiseUpDeepLink(){
+  try{
+    const params=new URLSearchParams(window.location.search);
+    const target=(params.get('open') || '').toLowerCase();
+    if(!target) return;
+
+    const actions={
+      fundraisers:()=>document.getElementById('fundraisers')?.click(),
+      fundraiser:()=>document.getElementById('fundraisers')?.click(),
+      events:()=>document.getElementById('events')?.click(),
+      documents:()=>document.getElementById('documents')?.click(),
+      steubenville:()=>document.getElementById('steubenville')?.click(),
+      updates:()=>document.getElementById('important-updates')?.click(),
+      donations:()=>document.getElementById('donations')?.click(),
+      contact:()=>document.querySelector('[data-title="Contact Us"]')?.click()
+    };
+
+    if(actions[target]){
+      // Small delay allows the app language/audience state to finish restoring first.
+      setTimeout(actions[target],250);
+    }
+  }catch(e){
+    console.warn('Deep link could not be opened',e);
+  }
+}
+window.addEventListener('load',openRiseUpDeepLink);
+
 </script>
 </body></html>
