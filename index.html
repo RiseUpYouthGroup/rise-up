@@ -265,11 +265,26 @@ window.OneSignalDeferred.push(async function(OneSignal) {
 </div></div>
 
 <div id="fund-modal" class="modal"><div class="sheet">
-  <div style="text-align:center;padding:38px 12px 28px">
-    <h2 style="font-size:28px;margin:0 0 14px">FUNDRAISERS</h2>
-    <p style="font-style:italic;margin:0">More information will be available soon.</p>
+  <div style="text-align:center;padding:12px 4px 8px">
+    <h2 id="fund-title" style="font-size:28px;margin:0 0 6px">HOLIDAY FUNDRAISER</h2>
+    <p id="fund-subtitle" style="margin:0 0 12px;color:var(--muted)">Support Rise Up Youth Group Meetings & Retreats</p>
+
+    <div style="display:inline-block;background:#f7f8fa;border:1px solid var(--border);border-radius:12px;padding:9px 14px;margin-bottom:14px">
+      <span id="fund-code-label" style="font-size:12px;color:var(--muted)">Fundraising Code</span><br>
+      <strong style="font-size:20px;color:var(--navy)">RESURRFL002</strong>
+    </div>
+
+    <img
+      src="https://riseupyouthgroup.github.io/rise-up/greenery-fundraiser-flyer.png"
+      alt="Rise Up Holiday Fundraiser flyer"
+      style="display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--border);margin:0 auto 14px"
+    >
+
+    <a id="fund-shop" class="submit" href="https://GiftItForward.com" target="_blank" rel="noopener">SHOP NOW</a>
+    <a id="fund-view" class="close" href="https://riseupyouthgroup.github.io/rise-up/greenery-fundraiser-flyer.png" target="_blank" rel="noopener" style="display:block;text-decoration:none;text-align:center">VIEW FLYER</a>
   </div>
-  <button class="close" data-close="fund-modal">← Back</button>
+
+  <button class="close" data-close="fund-modal" id="fund-back">← Back</button>
 </div></div>
 
 <div id="steub-modal" class="modal"><div class="sheet">
@@ -436,6 +451,27 @@ const parentViewBtn=document.getElementById('parent-view');
 const viewNote=document.getElementById('view-note');
 
 
+
+function fundraiserText(){
+  const lang=window.riseUpLang || 'en';
+  const map={
+    en:{title:'HOLIDAY FUNDRAISER',subtitle:'Support Rise Up Youth Group Meetings & Retreats',code:'Fundraising Code',shop:'SHOP NOW',view:'VIEW FLYER',back:'← Back'},
+    pt:{title:'ARRECADAÇÃO DE FIM DE ANO',subtitle:'Ajude a apoiar os encontros e retiros do Rise Up Youth Group',code:'Código da arrecadação',shop:'COMPRAR AGORA',view:'VER FLYER',back:'← Voltar'},
+    es:{title:'RECAUDACIÓN NAVIDEÑA',subtitle:'Apoya las reuniones y retiros de Rise Up Youth Group',code:'Código de recaudación',shop:'COMPRAR AHORA',view:'VER FLYER',back:'← Volver'}
+  };
+  return map[lang] || map.en;
+}
+function refreshFundraiserText(){
+  const t=fundraiserText();
+  const el=(id)=>document.getElementById(id);
+  if(el('fund-title')) el('fund-title').textContent=t.title;
+  if(el('fund-subtitle')) el('fund-subtitle').textContent=t.subtitle;
+  if(el('fund-code-label')) el('fund-code-label').textContent=t.code;
+  if(el('fund-shop')) el('fund-shop').textContent=t.shop;
+  if(el('fund-view')) el('fund-view').textContent=t.view;
+  if(el('fund-back')) el('fund-back').textContent=t.back;
+}
+
 function notificationText(){
   const lang=window.riseUpLang || 'en';
   const all={
@@ -475,6 +511,7 @@ async function syncOneSignalAudience(mode){
 
 document.getElementById('enable-notifications').addEventListener('click',()=>{
   try{ refreshNotificationText(); }catch(e){ console.warn('Notification text refresh skipped',e); }
+  try{ refreshFundraiserText(); }catch(e){ console.warn('Fundraiser text refresh skipped',e); }
   document.getElementById('notify-status').textContent='';
   notifyModal.classList.add('open');
 });
