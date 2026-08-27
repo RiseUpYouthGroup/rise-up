@@ -474,7 +474,7 @@ async function syncOneSignalAudience(mode){
 }
 
 document.getElementById('enable-notifications').addEventListener('click',()=>{
-  refreshNotificationText();
+  try{ refreshNotificationText(); }catch(e){ console.warn('Notification text refresh skipped',e); }
   document.getElementById('notify-status').textContent='';
   notifyModal.classList.add('open');
 });
@@ -523,7 +523,7 @@ function setAudience(mode){
     : 'Teen view';
   try{ localStorage.setItem('riseUpAudience', mode); }catch(e){}
   if(window.riseUpLang) setLanguage(window.riseUpLang);
-  syncOneSignalAudience(mode);
+  try{ syncOneSignalAudience(mode); }catch(e){ console.warn('Audience tag sync skipped',e); }
 }
 teenViewBtn.addEventListener('click',()=>setAudience('teen'));
 parentViewBtn.addEventListener('click',()=>setAudience('parent'));
@@ -810,7 +810,7 @@ function setLanguage(lang){
   });
 
   window.riseUpLang=lang;
-  refreshNotificationText();
+  try{ refreshNotificationText(); }catch(e){ console.warn('Notification text refresh skipped',e); }
   try{localStorage.setItem('riseUpLang',lang)}catch(e){}
 }
 
@@ -1187,6 +1187,6 @@ document.getElementById('view-events').addEventListener('click',()=>{
 });
 
 [infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal,installModal,parentRegisterModal,updatesModal,rsvpModal,notifyModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
 </script>
 </body></html>
