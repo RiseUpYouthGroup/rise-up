@@ -75,8 +75,8 @@ window.OneSignalDeferred = window.OneSignalDeferred || [];
 window.OneSignalDeferred.push(async function(OneSignal) {
   await OneSignal.init({
     appId: "d184402b-67b9-4d56-b922-9d4231576e01",
-    serviceWorkerPath: "rise-up/push/onesignal/OneSignalSDKWorker.js",
-    serviceWorkerParam: { scope: "/rise-up/push/onesignal/" },
+    serviceWorkerPath: "/rise-up/OneSignalSDKWorker.js",
+    serviceWorkerParam: { scope: "/rise-up/" },
     autoResubscribe: true
   });
   window.RiseUpOneSignal = OneSignal;
