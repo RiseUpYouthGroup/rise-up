@@ -68,6 +68,21 @@
     .welcome-box{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;margin:0 0 12px;text-align:center;color:var(--muted);font-size:13px}
     </style>
     
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+window.OneSignalDeferred.push(async function(OneSignal) {
+  await OneSignal.init({
+    appId: "d184402b-67b9-4d56-b922-9d4231576e01",
+    serviceWorkerPath: "rise-up/push/onesignal/OneSignalSDKWorker.js",
+    serviceWorkerParam: { scope: "/rise-up/push/onesignal/" },
+    autoResubscribe: true
+  });
+  window.RiseUpOneSignal = OneSignal;
+});
+</script>
+
 </head>
 <body>
 <main class="app">
@@ -108,6 +123,16 @@
 </section>
 <div class="footer">RISE UP Youth Group · Resurrection Catholic Church</div>
 </main>
+
+<div id="notify-modal" class="modal"><div class="sheet">
+  <div id="notify-content">
+    <h2 id="notify-title">Rise Up Notifications</h2>
+    <p id="notify-message">Allow notifications to receive important Rise Up reminders and updates on this device.</p>
+    <button class="submit" id="notify-allow" type="button">ALLOW NOTIFICATIONS</button>
+    <p id="notify-status" aria-live="polite" style="text-align:center;margin-top:12px"></p>
+    <button class="close" data-close="notify-modal" id="notify-close">Cancel</button>
+  </div>
+</div></div>
 
 <div id="install-modal" class="modal"><div class="sheet">
   <h2>Add Rise Up to Your Phone</h2>
@@ -398,12 +423,91 @@ const installModal=document.getElementById('install-modal');
 const parentRegisterModal=document.getElementById('parent-register-modal');
 const updatesModal=document.getElementById('updates-modal');
 const rsvpModal=document.getElementById('rsvp-modal');
+const notifyModal=document.getElementById('notify-modal');
 
 
 
 const teenViewBtn=document.getElementById('teen-view');
 const parentViewBtn=document.getElementById('parent-view');
 const viewNote=document.getElementById('view-note');
+
+
+function notificationText(){
+  const lang=window.riseUpLang || 'en';
+  const all={
+    en:{button:'ENABLE NOTIFICATIONS',sub:'Receive Rise Up reminders and updates',title:'Rise Up Notifications',message:'Allow notifications to receive important Rise Up reminders and updates on this device.',allow:'ALLOW NOTIFICATIONS',cancel:'Cancel',enabled:'Notifications are enabled!',denied:'Notifications are blocked in your browser settings.',unsupported:'Notifications are not supported on this browser.',iphone:'On iPhone, add Rise Up to your Home Screen first, then open it from the icon and enable notifications.',error:'Notifications could not be enabled. Please try again.'},
+    pt:{button:'ATIVAR NOTIFICAÇÕES',sub:'Receba lembretes e avisos do Rise Up',title:'Notificações do Rise Up',message:'Permita notificações para receber lembretes e avisos importantes do Rise Up neste aparelho.',allow:'ATIVAR NOTIFICAÇÕES',cancel:'Cancelar',enabled:'As notificações estão ativadas!',denied:'As notificações estão bloqueadas nas configurações do navegador.',unsupported:'Este navegador não oferece suporte a notificações.',iphone:'No iPhone, primeiro adicione o Rise Up à Tela de Início. Depois abra pelo ícone e ative as notificações.',error:'Não foi possível ativar as notificações. Tente novamente.'},
+    es:{button:'ACTIVAR NOTIFICACIONES',sub:'Recibe recordatorios y avisos de Rise Up',title:'Notificaciones de Rise Up',message:'Permite las notificaciones para recibir recordatorios y avisos importantes de Rise Up en este dispositivo.',allow:'ACTIVAR NOTIFICACIONES',cancel:'Cancelar',enabled:'¡Las notificaciones están activadas!',denied:'Las notificaciones están bloqueadas en la configuración del navegador.',unsupported:'Este navegador no admite notificaciones.',iphone:'En iPhone, primero añade Rise Up a la pantalla de inicio. Luego ábrelo desde el ícono y activa las notificaciones.',error:'No se pudieron activar las notificaciones. Inténtalo de nuevo.'}
+  };
+  return all[lang] || all.en;
+}
+
+function refreshNotificationText(){
+  const t=notificationText();
+  const b=document.getElementById('enable-notifications');
+  if(b){
+    b.childNodes[0].nodeValue='\n  '+t.button+'\n  ';
+    const s=document.getElementById('notify-sub'); if(s)s.textContent=t.sub;
+  }
+  const title=document.getElementById('notify-title'); if(title)title.textContent=t.title;
+  const msg=document.getElementById('notify-message'); if(msg)msg.textContent=t.message;
+  const allow=document.getElementById('notify-allow'); if(allow)allow.textContent=t.allow;
+  const close=document.getElementById('notify-close'); if(close)close.textContent=t.cancel;
+}
+
+async function syncOneSignalAudience(mode){
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window.OneSignalDeferred.push(async function(OneSignal){
+    try{
+      if(OneSignal.User && OneSignal.User.PushSubscription && OneSignal.User.PushSubscription.id){
+        OneSignal.User.addTags({
+          audience: mode === 'parent' ? 'parent' : 'teen',
+          rise_up_app: '1'
+        });
+      }
+    }catch(e){ console.warn('OneSignal audience tag error',e); }
+  });
+}
+
+document.getElementById('enable-notifications').addEventListener('click',()=>{
+  refreshNotificationText();
+  document.getElementById('notify-status').textContent='';
+  notifyModal.classList.add('open');
+});
+
+document.getElementById('notify-allow').addEventListener('click',()=>{
+  const t=notificationText();
+  const status=document.getElementById('notify-status');
+  const standalone=window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+
+  if(isiOS && !standalone){
+    status.textContent=t.iphone;
+    return;
+  }
+
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window.OneSignalDeferred.push(async function(OneSignal){
+    try{
+      if(!OneSignal.Notifications || !OneSignal.Notifications.isPushSupported()){
+        status.textContent=t.unsupported;
+        return;
+      }
+      await OneSignal.Notifications.requestPermission();
+      if(OneSignal.Notifications.permission){
+        const mode=document.body.classList.contains('parent-mode')?'parent':'teen';
+        OneSignal.User.addTags({audience:mode,rise_up_app:'1'});
+        status.textContent=t.enabled;
+      }else{
+        status.textContent=t.denied;
+      }
+    }catch(e){
+      console.error(e);
+      status.textContent=t.error;
+    }
+  });
+});
+
 
 function setAudience(mode){
   const parent=mode==='parent';
@@ -415,6 +519,7 @@ function setAudience(mode){
     : 'Teen view';
   try{ localStorage.setItem('riseUpAudience', mode); }catch(e){}
   if(window.riseUpLang) setLanguage(window.riseUpLang);
+  syncOneSignalAudience(mode);
 }
 teenViewBtn.addEventListener('click',()=>setAudience('teen'));
 parentViewBtn.addEventListener('click',()=>setAudience('parent'));
@@ -701,6 +806,7 @@ function setLanguage(lang){
   });
 
   window.riseUpLang=lang;
+  refreshNotificationText();
   try{localStorage.setItem('riseUpLang',lang)}catch(e){}
 }
 
@@ -1076,7 +1182,7 @@ document.getElementById('view-events').addEventListener('click',()=>{
   openEvents();
 });
 
-[infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal,installModal,parentRegisterModal,updatesModal,rsvpModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+[infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal,installModal,parentRegisterModal,updatesModal,rsvpModal,notifyModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body></html>
