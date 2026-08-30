@@ -187,45 +187,6 @@ window.OneSignalDeferred.push(async function(OneSignal) {
         <option value="">Select grade</option>
         <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
       </select>
-
-      <label for="pr-addTeen2" id="pr-addTeen2-label">Do you have another teen in Rise Up?</label>
-      <select id="pr-addTeen2" name="addTeen2">
-        <option value="no">No</option>
-        <option value="yes">Yes</option>
-      </select>
-
-      <div id="pr-teen2-wrap" class="hidden">
-        <div class="section-label" id="pr-teen2-title">Teen 2 Information</div>
-        <label for="pr-teen2FirstName" id="pr-teen2First-label">Teen 2 First Name</label>
-        <input id="pr-teen2FirstName" name="teen2FirstName" maxlength="50">
-        <label for="pr-teen2LastName" id="pr-teen2Last-label">Teen 2 Last Name</label>
-        <input id="pr-teen2LastName" name="teen2LastName" maxlength="50">
-        <label for="pr-teen2Grade" id="pr-teen2Grade-label">Teen 2 Grade</label>
-        <select id="pr-teen2Grade" name="teen2Grade">
-          <option value="">Select grade</option>
-          <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
-        </select>
-
-        <label for="pr-addTeen3" id="pr-addTeen3-label">Do you have a third teen in Rise Up?</label>
-        <select id="pr-addTeen3" name="addTeen3">
-          <option value="no">No</option>
-          <option value="yes">Yes</option>
-        </select>
-      </div>
-
-      <div id="pr-teen3-wrap" class="hidden">
-        <div class="section-label" id="pr-teen3-title">Teen 3 Information</div>
-        <label for="pr-teen3FirstName" id="pr-teen3First-label">Teen 3 First Name</label>
-        <input id="pr-teen3FirstName" name="teen3FirstName" maxlength="50">
-        <label for="pr-teen3LastName" id="pr-teen3Last-label">Teen 3 Last Name</label>
-        <input id="pr-teen3LastName" name="teen3LastName" maxlength="50">
-        <label for="pr-teen3Grade" id="pr-teen3Grade-label">Teen 3 Grade</label>
-        <select id="pr-teen3Grade" name="teen3Grade">
-          <option value="">Select grade</option>
-          <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
-        </select>
-      </div>
-
       <button class="submit" id="parent-submit" type="submit">REGISTER</button>
       <p id="parent-status" aria-live="polite"></p>
     </form>
@@ -283,17 +244,11 @@ window.OneSignalDeferred.push(async function(OneSignal) {
 </div></div>
 
 <div id="documents-modal" class="modal"><div class="sheet">
-  <div style="text-align:center;padding:18px 8px 12px">
-    <h2 id="docs-consent-title">ANNUAL PARENTAL CONSENT FORM</h2>
-    <p id="docs-consent-sub" style="margin:8px 0 20px">Required for all Rise Up participants</p>
-    <a id="docs-download" class="submit" href="consent-viewer.html?lang=en" style="display:block;text-decoration:none;text-align:center;margin:0 0 12px">OPEN / PRINT FORM</a>
-    <a id="docs-upload" class="submit" href="https://tally.so/r/dWe4Lo" target="_blank" rel="noopener"
-       style="display:block;text-decoration:none;text-align:center;margin:0 0 10px">UPLOAD COMPLETED FORM</a>
-    <p id="docs-upload-note" style="font-size:12px;color:var(--muted);margin-top:10px">
-      Upload your completed and signed form here.
-    </p>
+  <div style="text-align:center;padding:38px 12px 28px">
+    <h2 style="font-size:28px;margin:0 0 14px">DOCUMENTS</h2>
+    <p style="font-style:italic;margin:0">No documents are available at this time.</p>
   </div>
-  <button class="close" data-close="documents-modal" id="docs-back">← Back</button>
+  <button class="close" data-close="documents-modal">← Back</button>
 </div></div>
 
 <div id="donations-modal" class="modal"><div class="sheet">
@@ -907,26 +862,6 @@ setLanguage(savedLang);
 document.getElementById('parent-register').addEventListener('click',()=>parentRegisterModal.classList.add('open'));
 document.getElementById('important-updates').addEventListener('click',()=>updatesModal.classList.add('open'));
 
-
-const prAddTeen2=document.getElementById('pr-addTeen2');
-const prAddTeen3=document.getElementById('pr-addTeen3');
-function setOptionalTeenVisibility(){
-  const show2=prAddTeen2 && prAddTeen2.value==='yes';
-  document.getElementById('pr-teen2-wrap')?.classList.toggle('hidden',!show2);
-  ['pr-teen2FirstName','pr-teen2LastName','pr-teen2Grade'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.required=show2;
-  });
-  if(!show2 && prAddTeen3) prAddTeen3.value='no';
-  const show3=show2 && prAddTeen3 && prAddTeen3.value==='yes';
-  document.getElementById('pr-teen3-wrap')?.classList.toggle('hidden',!show3);
-  ['pr-teen3FirstName','pr-teen3LastName','pr-teen3Grade'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.required=show3;
-  });
-}
-prAddTeen2?.addEventListener('change',setOptionalTeenVisibility);
-prAddTeen3?.addEventListener('change',setOptionalTeenVisibility);
-setOptionalTeenVisibility();
-
 document.getElementById('parent-register-form').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const btn=document.getElementById('parent-submit');
@@ -1290,31 +1225,6 @@ document.getElementById('view-events').addEventListener('click',()=>{
 
 [infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal,installModal,parentRegisterModal,updatesModal,rsvpModal,notifyModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 
-
-
-function refreshConsentDocument(){
-  const lang=window.riseUpLang || 'en';
-  const data={
-    en:{title:'ANNUAL PARENTAL CONSENT FORM',sub:'Required for all Rise Up participants',download:'OPEN / PRINT FORM',upload:'UPLOAD COMPLETED FORM',note:'Upload your completed and signed form here.',back:'← Back',file:'consent-viewer.html?lang=en'},
-    es:{title:'FORMULARIO ANUAL DE CONSENTIMIENTO DE LOS PADRES',sub:'Requerido para todos los participantes de Rise Up',download:'ABRIR / IMPRIMIR FORMULARIO',upload:'SUBIR FORMULARIO COMPLETO',note:'Sube aquí tu formulario completo y firmado.',back:'← Volver',file:'consent-viewer.html?lang=es'},
-    pt:{title:'FORMULÁRIO ANUAL DE CONSENTIMENTO DOS PAIS',sub:'Obrigatório para todos os participantes do Rise Up',download:'ABRIR / IMPRIMIR FORMULÁRIO',upload:'ENVIAR FORMULÁRIO PREENCHIDO',note:'Envie aqui seu formulário preenchido e assinado.',back:'← Voltar',file:'consent-viewer.html?lang=pt'}
-  };
-  const t=data[lang] || data.en;
-  const set=(id,val)=>{const el=document.getElementById(id); if(el) el.textContent=val;};
-  set('docs-consent-title',t.title);
-  set('docs-consent-sub',t.sub);
-  set('docs-download',t.download);
-  set('docs-upload',t.upload);
-  set('docs-upload-note',t.note);
-  set('docs-back',t.back);
-  const dl=document.getElementById('docs-download');
-  if(dl) dl.href=t.file;
-}
-document.getElementById('documents')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
-document.getElementById('lang-en')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
-document.getElementById('lang-pt')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
-document.getElementById('lang-es')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
-window.addEventListener('load',refreshConsentDocument);
 
 function openRiseUpDeepLink(){
   try{
