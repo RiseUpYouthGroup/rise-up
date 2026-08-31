@@ -121,6 +121,7 @@ window.OneSignalDeferred.push(async function(OneSignal) {
   <button class="card" id="events"><div class="icon">◷</div><div class="title">Upcoming Events</div><div class="desc">Meetings, Masses & activities</div></button>
   <button class="card" id="steubenville"><div class="icon">★</div><div class="title">Steubenville</div><div class="desc">Conference information & updates</div></button>
   <button class="card" id="fundraisers"><div class="icon">◎</div><div class="title">Fundraisers</div><div class="desc">Campaigns & opportunities</div></button>
+  <button class="card" id="quick-actions"><div class="icon">⚡</div><div class="title">Quick Actions</div><div class="desc">Orders, sign-ups & more</div></button>
   <button class="card" id="donations"><div class="icon">♡</div><div class="title">Donations</div><div class="desc">Support Rise Up</div></button>
   <button class="card" id="documents"><div class="icon">▤</div><div class="title">Documents</div><div class="desc">Forms, files & resources</div></button>
   <button class="card" data-title="Contact Us" data-text="Rise Up ministry team contact information will be added here."><div class="icon">✉</div><div class="title">Contact Us</div><div class="desc">Reach the ministry team</div></button>
@@ -187,6 +188,45 @@ window.OneSignalDeferred.push(async function(OneSignal) {
         <option value="">Select grade</option>
         <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
       </select>
+
+      <label for="pr-addTeen2" id="pr-addTeen2-label">Do you have another teen in Rise Up?</label>
+      <select id="pr-addTeen2" name="addTeen2">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+
+      <div id="pr-teen2-wrap" class="hidden">
+        <div class="section-label" id="pr-teen2-title">Teen 2 Information</div>
+        <label for="pr-teen2FirstName" id="pr-teen2First-label">Teen 2 First Name</label>
+        <input id="pr-teen2FirstName" name="teen2FirstName" maxlength="50">
+        <label for="pr-teen2LastName" id="pr-teen2Last-label">Teen 2 Last Name</label>
+        <input id="pr-teen2LastName" name="teen2LastName" maxlength="50">
+        <label for="pr-teen2Grade" id="pr-teen2Grade-label">Teen 2 Grade</label>
+        <select id="pr-teen2Grade" name="teen2Grade">
+          <option value="">Select grade</option>
+          <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
+        </select>
+
+        <label for="pr-addTeen3" id="pr-addTeen3-label">Do you have a third teen in Rise Up?</label>
+        <select id="pr-addTeen3" name="addTeen3">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+
+      <div id="pr-teen3-wrap" class="hidden">
+        <div class="section-label" id="pr-teen3-title">Teen 3 Information</div>
+        <label for="pr-teen3FirstName" id="pr-teen3First-label">Teen 3 First Name</label>
+        <input id="pr-teen3FirstName" name="teen3FirstName" maxlength="50">
+        <label for="pr-teen3LastName" id="pr-teen3Last-label">Teen 3 Last Name</label>
+        <input id="pr-teen3LastName" name="teen3LastName" maxlength="50">
+        <label for="pr-teen3Grade" id="pr-teen3Grade-label">Teen 3 Grade</label>
+        <select id="pr-teen3Grade" name="teen3Grade">
+          <option value="">Select grade</option>
+          <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
+        </select>
+      </div>
+
       <button class="submit" id="parent-submit" type="submit">REGISTER</button>
       <p id="parent-status" aria-live="polite"></p>
     </form>
@@ -244,11 +284,17 @@ window.OneSignalDeferred.push(async function(OneSignal) {
 </div></div>
 
 <div id="documents-modal" class="modal"><div class="sheet">
-  <div style="text-align:center;padding:38px 12px 28px">
-    <h2 style="font-size:28px;margin:0 0 14px">DOCUMENTS</h2>
-    <p style="font-style:italic;margin:0">No documents are available at this time.</p>
+  <div style="text-align:center;padding:18px 8px 12px">
+    <h2 id="docs-consent-title">ANNUAL PARENTAL CONSENT FORM</h2>
+    <p id="docs-consent-sub" style="margin:8px 0 20px">Required for all Rise Up participants</p>
+    <a id="docs-download" class="submit" href="consent-viewer.html?lang=en" style="display:block;text-decoration:none;text-align:center;margin:0 0 12px">OPEN / PRINT FORM</a>
+    <a id="docs-upload" class="submit" href="https://tally.so/r/dWe4Lo" target="_blank" rel="noopener"
+       style="display:block;text-decoration:none;text-align:center;margin:0 0 10px">UPLOAD COMPLETED FORM</a>
+    <p id="docs-upload-note" style="font-size:12px;color:var(--muted);margin-top:10px">
+      Upload your completed and signed form here.
+    </p>
   </div>
-  <button class="close" data-close="documents-modal">← Back</button>
+  <button class="close" data-close="documents-modal" id="docs-back">← Back</button>
 </div></div>
 
 <div id="donations-modal" class="modal"><div class="sheet">
@@ -262,6 +308,54 @@ window.OneSignalDeferred.push(async function(OneSignal) {
     <p style="font-size:12px;margin:0 auto 12px">Please confirm the recipient's name before sending your donation.</p>
   </div>
   <button class="close" data-close="donations-modal">← Back</button>
+</div></div>
+
+<div id="quick-actions-modal" class="modal"><div class="sheet">
+  <h2 id="quick-actions-title">QUICK ACTIONS</h2>
+  <p id="quick-actions-intro">Things you can take care of right now.</p>
+  <button class="card" id="shirt-order-open" type="button" style="width:100%;margin-top:16px">
+    <div class="icon">👕</div>
+    <div class="title" id="shirt-card-title">Rise Up Shirt Order</div>
+    <div class="desc" id="shirt-card-desc">$23 • Choose your size and submit payment receipt</div>
+  </button>
+  <button class="close" data-close="quick-actions-modal" id="quick-actions-back">← Back</button>
+</div></div>
+
+<div id="shirt-order-modal" class="modal"><div class="sheet">
+  <div id="shirt-form-wrap">
+    <h2 id="shirt-title">RISE UP SHIRT ORDER</h2>
+    <p id="shirt-price" style="font-weight:800;color:var(--navy);font-size:18px">$23 per shirt</p>
+    <form id="shirt-order-form">
+      <label id="shirt-name-label" for="shirt-teen-name">Teen's Name</label>
+      <input id="shirt-teen-name" name="teenName" type="text" required autocomplete="name">
+
+      <label id="shirt-size-label" for="shirt-size">Shirt Size</label>
+      <select id="shirt-size" name="size" required>
+        <option value="">Select size</option>
+        <option value="S">S</option><option value="M">M</option><option value="L">L</option><option value="XL">XL</option>
+      </select>
+
+      <div style="text-align:center;margin:20px 0 12px">
+        <h3 id="shirt-zelle-heading" style="margin-bottom:8px">Pay with Zelle</h3>
+        <img src="shirt-zelle-qr.png" alt="Zelle QR code for Rise Up shirt payment" style="width:min(290px,85%);height:auto;border-radius:14px;border:1px solid var(--border);background:white;padding:8px">
+        <p id="shirt-zelle-note" style="font-size:13px;line-height:1.45;margin:12px auto 4px;max-width:420px">Zelle payments are collected through <strong>Joao Anna</strong>, one of our Youth Ministry team members, with the authorization of Resurrection Catholic Church.</p>
+        <p id="shirt-confirm-note" style="font-size:13px;line-height:1.45;margin:4px auto 12px;max-width:420px"><strong>Please confirm Joao Anna as the recipient before sending your payment.</strong></p>
+      </div>
+
+      <label id="shirt-receipt-label" for="shirt-receipt">Zelle Payment Receipt</label>
+      <input id="shirt-receipt" name="receipt" type="file" accept="image/jpeg,image/png,application/pdf" required>
+      <p id="shirt-receipt-help" style="font-size:12px;color:var(--muted);margin-top:5px">Upload a screenshot, photo, or PDF of your payment confirmation.</p>
+
+      <button class="submit" id="shirt-submit" type="submit">SUBMIT ORDER</button>
+      <p id="shirt-status" aria-live="polite" style="text-align:center;margin-top:12px"></p>
+    </form>
+  </div>
+  <div id="shirt-success" class="hidden" style="text-align:center;padding:16px 0">
+    <h3 id="shirt-success-title">Order received!</h3>
+    <p id="shirt-success-text">Thank you. Your Rise Up shirt order has been submitted.</p>
+    <button class="submit" id="shirt-success-close" type="button">DONE</button>
+  </div>
+  <button class="close" data-close="shirt-order-modal" id="shirt-back">← Back</button>
 </div></div>
 
 <div id="fund-modal" class="modal"><div class="sheet">
@@ -319,7 +413,7 @@ window.OneSignalDeferred.push(async function(OneSignal) {
       </select>
 
       <label for="birthday">Birthday <span style="font-weight:400;color:var(--muted)">(month/day only)</span></label>
-      <input id="birthday" name="birthday" inputmode="numeric" placeholder="MM/DD" maxlength="5">
+      <input id="birthday" name="birthday" inputmode="numeric" maxlength="5" type="text" placeholder="MM/DD">
 
       <div class="section-label">Your Favorites</div>
 
@@ -438,6 +532,11 @@ const fundModal=document.getElementById('fund-modal');
 const donationsModal=document.getElementById('donations-modal');
 const knowModal=document.getElementById('know-modal');
 const documentsModal=document.getElementById('documents-modal');
+const quickActionsModal=document.getElementById('quick-actions-modal');
+const shirtOrderModal=document.getElementById('shirt-order-modal');
+// Paste the deployed Google Apps Script Web App URL here after setup.
+const SHIRT_ORDER_ENDPOINT='https://script.google.com/macros/s/AKfycbyCiBR8rlMLqiK3J8CKYvJJKyP8ms1iRRo396qvBuCJr8i7utW2F-Kqoa-qXJBat9FFiA/exec';
+
 const installModal=document.getElementById('install-modal');
 const parentRegisterModal=document.getElementById('parent-register-modal');
 const updatesModal=document.getElementById('updates-modal');
@@ -580,6 +679,15 @@ const translations={
     fund:'Fundraisers', fundDesc:'Campaigns & opportunities',
     donate:'Donations', donateDesc:'Support Rise Up',
     docs:'Documents', docsDesc:'Forms, files & resources',
+    quick:'Quick Actions', quickDesc:'Orders, sign-ups & more',
+    quickTitle:'QUICK ACTIONS', quickIntro:'Things you can take care of right now.',
+    shirtCard:'Rise Up Shirt Order', shirtCardDesc:'$23 • Choose your size and submit payment receipt',
+    shirtTitle:'RISE UP SHIRT ORDER', shirtPrice:'$23 per shirt', shirtName:"Teen's Name", shirtSize:'Shirt Size', shirtSelect:'Select size',
+    shirtZelle:'Pay with Zelle', shirtZelleNote:'Zelle payments are collected through <strong>Joao Anna</strong>, one of our Youth Ministry team members, with the authorization of Resurrection Catholic Church.',
+    shirtConfirm:'<strong>Please confirm Joao Anna as the recipient before sending your payment.</strong>',
+    shirtReceipt:'Zelle Payment Receipt', shirtReceiptHelp:'Upload a screenshot, photo, or PDF of your payment confirmation.',
+    shirtSubmit:'SUBMIT ORDER', shirtSuccess:'Order received!', shirtSuccessText:'Thank you. Your Rise Up shirt order has been submitted.', done:'DONE',
+
     contact:'Contact Us', contactDesc:'Reach the ministry team',
     comingSoon:'More information will be available soon.',
     noDocs:'No documents are available at this time.',
@@ -633,6 +741,15 @@ const translations={
     fund:'Arrecadações', fundDesc:'Campanhas e oportunidades',
     donate:'Doações', donateDesc:'Apoie o Rise Up',
     docs:'Documentos', docsDesc:'Formulários, arquivos e recursos',
+    quick:'Ações Rápidas', quickDesc:'Pedidos, inscrições e mais',
+    quickTitle:'AÇÕES RÁPIDAS', quickIntro:'Resolva aqui o que está disponível no momento.',
+    shirtCard:'Pedido de Camisa Rise Up', shirtCardDesc:'US$23 • Escolha o tamanho e envie o comprovante',
+    shirtTitle:'PEDIDO DE CAMISA RISE UP', shirtPrice:'US$23 por camisa', shirtName:'Nome do Jovem', shirtSize:'Tamanho da Camisa', shirtSelect:'Selecione o tamanho',
+    shirtZelle:'Pague pelo Zelle', shirtZelleNote:'Os pagamentos pelo Zelle são recebidos através de <strong>Joao Anna</strong>, um dos membros da nossa equipe do Ministério Jovem, com a autorização da Resurrection Catholic Church.',
+    shirtConfirm:'<strong>Confirme que Joao Anna aparece como destinatário antes de enviar o pagamento.</strong>',
+    shirtReceipt:'Comprovante de Pagamento pelo Zelle', shirtReceiptHelp:'Envie uma captura de tela, foto ou PDF do comprovante de pagamento.',
+    shirtSubmit:'ENVIAR PEDIDO', shirtSuccess:'Pedido recebido!', shirtSuccessText:'Obrigado. Seu pedido da camisa Rise Up foi enviado.', done:'CONCLUIR',
+
     contact:'Fale Conosco', contactDesc:'Entre em contato com a equipe',
     comingSoon:'Mais informações estarão disponíveis em breve.',
     noDocs:'Nenhum documento está disponível no momento.',
@@ -686,6 +803,15 @@ const translations={
     fund:'Recaudaciones', fundDesc:'Campañas y oportunidades',
     donate:'Donaciones', donateDesc:'Apoya a Rise Up',
     docs:'Documentos', docsDesc:'Formularios, archivos y recursos',
+    quick:'Acciones Rápidas', quickDesc:'Pedidos, inscripciones y más',
+    quickTitle:'ACCIONES RÁPIDAS', quickIntro:'Haz aquí lo que esté disponible en este momento.',
+    shirtCard:'Pedido de Camisa Rise Up', shirtCardDesc:'$23 • Elige la talla y sube el comprobante',
+    shirtTitle:'PEDIDO DE CAMISA RISE UP', shirtPrice:'$23 por camisa', shirtName:'Nombre del Joven', shirtSize:'Talla de Camisa', shirtSelect:'Selecciona la talla',
+    shirtZelle:'Paga con Zelle', shirtZelleNote:'Los pagos por Zelle se reciben a través de <strong>Joao Anna</strong>, uno de los miembros de nuestro equipo de Ministerio Juvenil, con la autorización de Resurrection Catholic Church.',
+    shirtConfirm:'<strong>Confirma que Joao Anna aparezca como destinatario antes de enviar el pago.</strong>',
+    shirtReceipt:'Comprobante de Pago por Zelle', shirtReceiptHelp:'Sube una captura de pantalla, foto o PDF del comprobante de pago.',
+    shirtSubmit:'ENVIAR PEDIDO', shirtSuccess:'¡Pedido recibido!', shirtSuccessText:'Gracias. Tu pedido de camisa Rise Up ha sido enviado.', done:'LISTO',
+
     contact:'Contáctanos', contactDesc:'Comunícate con el equipo',
     comingSoon:'Más información estará disponible pronto.',
     noDocs:'No hay documentos disponibles en este momento.',
@@ -750,7 +876,7 @@ function setLanguage(lang){
   const cardMap=[
     ['join',t.join,t.joinDesc],['know-you',t.know,t.knowDesc],['parent-register',t.register,t.registerDesc],
     ['important-updates',t.updates,t.updatesDesc],['events',t.events,t.eventsDesc],['steubenville',t.steub,t.steubDesc],
-    ['fundraisers',t.fund,t.fundDesc],['donations',t.donate,t.donateDesc],['documents',t.docs,t.docsDesc]
+    ['fundraisers',t.fund,t.fundDesc],['quick-actions',t.quick,t.quickDesc],['donations',t.donate,t.donateDesc],['documents',t.docs,t.docsDesc]
   ];
   cardMap.forEach(([id,title,desc])=>{
     const c=document.getElementById(id); if(!c)return;
@@ -769,6 +895,26 @@ function setLanguage(lang){
   setModal('fund-modal',t.fundTitle,t.comingSoon);
   setModal('documents-modal',t.docsTitle,t.noDocs);
   setModal('updates-modal',t.updatesTitle,t.noUpdates);
+
+  // Quick Actions / Shirt Order
+  txt(document.getElementById('quick-actions-title'),t.quickTitle);
+  txt(document.getElementById('quick-actions-intro'),t.quickIntro);
+  txt(document.getElementById('shirt-card-title'),t.shirtCard);
+  txt(document.getElementById('shirt-card-desc'),t.shirtCardDesc);
+  txt(document.getElementById('shirt-title'),t.shirtTitle);
+  txt(document.getElementById('shirt-price'),t.shirtPrice);
+  txt(document.getElementById('shirt-name-label'),t.shirtName);
+  txt(document.getElementById('shirt-size-label'),t.shirtSize);
+  const shirtSel=document.getElementById('shirt-size'); if(shirtSel&&shirtSel.options[0]) shirtSel.options[0].text=t.shirtSelect;
+  txt(document.getElementById('shirt-zelle-heading'),t.shirtZelle);
+  const szn=document.getElementById('shirt-zelle-note'); if(szn) szn.innerHTML=t.shirtZelleNote;
+  const scn=document.getElementById('shirt-confirm-note'); if(scn) scn.innerHTML=t.shirtConfirm;
+  txt(document.getElementById('shirt-receipt-label'),t.shirtReceipt);
+  txt(document.getElementById('shirt-receipt-help'),t.shirtReceiptHelp);
+  txt(document.getElementById('shirt-submit'),t.shirtSubmit);
+  txt(document.getElementById('shirt-success-title'),t.shirtSuccess);
+  txt(document.getElementById('shirt-success-text'),t.shirtSuccessText);
+  txt(document.getElementById('shirt-success-close'),t.done);
 
   // Donations
   const dm=document.getElementById('donations-modal');
@@ -862,6 +1008,26 @@ setLanguage(savedLang);
 document.getElementById('parent-register').addEventListener('click',()=>parentRegisterModal.classList.add('open'));
 document.getElementById('important-updates').addEventListener('click',()=>updatesModal.classList.add('open'));
 
+
+const prAddTeen2=document.getElementById('pr-addTeen2');
+const prAddTeen3=document.getElementById('pr-addTeen3');
+function setOptionalTeenVisibility(){
+  const show2=prAddTeen2 && prAddTeen2.value==='yes';
+  document.getElementById('pr-teen2-wrap')?.classList.toggle('hidden',!show2);
+  ['pr-teen2FirstName','pr-teen2LastName','pr-teen2Grade'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.required=show2;
+  });
+  if(!show2 && prAddTeen3) prAddTeen3.value='no';
+  const show3=show2 && prAddTeen3 && prAddTeen3.value==='yes';
+  document.getElementById('pr-teen3-wrap')?.classList.toggle('hidden',!show3);
+  ['pr-teen3FirstName','pr-teen3LastName','pr-teen3Grade'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.required=show3;
+  });
+}
+prAddTeen2?.addEventListener('change',setOptionalTeenVisibility);
+prAddTeen3?.addEventListener('change',setOptionalTeenVisibility);
+setOptionalTeenVisibility();
+
 document.getElementById('parent-register-form').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const btn=document.getElementById('parent-submit');
@@ -941,6 +1107,10 @@ document.getElementById('join').addEventListener('click',()=>joinModal.classList
 document.getElementById('know-you').addEventListener('click',()=>knowModal.classList.add('open'));
 document.getElementById('steubenville').addEventListener('click',()=>steubModal.classList.add('open'));
 document.getElementById('fundraisers').addEventListener('click',()=>fundModal.classList.add('open'));
+document.getElementById('quick-actions').addEventListener('click',()=>quickActionsModal.classList.add('open'));
+document.getElementById('shirt-order-open').addEventListener('click',()=>{quickActionsModal.classList.remove('open');shirtOrderModal.classList.add('open');});
+document.getElementById('shirt-success-close').addEventListener('click',()=>{shirtOrderModal.classList.remove('open');document.getElementById('shirt-success').classList.add('hidden');document.getElementById('shirt-form-wrap').classList.remove('hidden');});
+
 document.getElementById('donations').addEventListener('click',()=>donationsModal.classList.add('open'));
 document.getElementById('documents').addEventListener('click',()=>documentsModal.classList.add('open'));
 
@@ -1155,6 +1325,46 @@ async function openEvents(){
   }
 }
 
+
+document.getElementById('shirt-order-form').addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const status=document.getElementById('shirt-status');
+  const btn=document.getElementById('shirt-submit');
+  const t=translations[window.riseUpLang||'en']||translations.en;
+  if(!SHIRT_ORDER_ENDPOINT){
+    status.textContent=(window.riseUpLang==='pt')
+      ?'A página está pronta. Falta conectar o endereço do formulário de pedidos.'
+      :(window.riseUpLang==='es')
+      ?'La página está lista. Falta conectar la dirección del formulario de pedidos.'
+      :'This page is ready. The order form connection still needs to be added.';
+    return;
+  }
+  const file=document.getElementById('shirt-receipt').files[0];
+  if(!file) return;
+  if(file.size>10*1024*1024){
+    status.textContent=(window.riseUpLang==='pt')?'O arquivo deve ter no máximo 10 MB.':(window.riseUpLang==='es')?'El archivo debe tener un máximo de 10 MB.':'File must be 10 MB or smaller.';
+    return;
+  }
+  btn.disabled=true; status.textContent=(window.riseUpLang==='pt')?'Enviando…':(window.riseUpLang==='es')?'Enviando…':'Submitting…';
+  try{
+    const data=await new Promise((resolve,reject)=>{
+      const r=new FileReader(); r.onload=()=>resolve(String(r.result).split(',')[1]); r.onerror=reject; r.readAsDataURL(file);
+    });
+    const payload={
+      teenName:document.getElementById('shirt-teen-name').value.trim(),
+      size:document.getElementById('shirt-size').value,
+      fileName:file.name, mimeType:file.type||'application/octet-stream', fileData:data
+    };
+    await fetch(SHIRT_ORDER_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    document.getElementById('shirt-form-wrap').classList.add('hidden');
+    document.getElementById('shirt-success').classList.remove('hidden');
+    e.target.reset(); status.textContent='';
+  }catch(err){
+    console.error(err);
+    status.textContent=(window.riseUpLang==='pt')?'Não foi possível enviar. Tente novamente.':(window.riseUpLang==='es')?'No se pudo enviar. Inténtalo de nuevo.':'Could not submit. Please try again.';
+  }finally{btn.disabled=false;}
+});
+
 document.getElementById('events').addEventListener('click',openEvents);
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>document.getElementById(b.dataset.close).classList.remove('open')));
 
@@ -1223,8 +1433,33 @@ document.getElementById('view-events').addEventListener('click',()=>{
   openEvents();
 });
 
-[infoModal,joinModal,eventsModal,steubModal,fundModal,donationsModal,knowModal,documentsModal,installModal,parentRegisterModal,updatesModal,rsvpModal,notifyModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+[infoModal,joinModal,eventsModal,steubModal,fundModal,quickActionsModal,shirtOrderModal,donationsModal,knowModal,documentsModal,installModal,parentRegisterModal,updatesModal,rsvpModal,notifyModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 
+
+
+function refreshConsentDocument(){
+  const lang=window.riseUpLang || 'en';
+  const data={
+    en:{title:'ANNUAL PARENTAL CONSENT FORM',sub:'Required for all Rise Up participants',download:'OPEN / PRINT FORM',upload:'UPLOAD COMPLETED FORM',note:'Upload your completed and signed form here.',back:'← Back',file:'consent-viewer.html?lang=en'},
+    es:{title:'FORMULARIO ANUAL DE CONSENTIMIENTO DE LOS PADRES',sub:'Requerido para todos los participantes de Rise Up',download:'ABRIR / IMPRIMIR FORMULARIO',upload:'SUBIR FORMULARIO COMPLETO',note:'Sube aquí tu formulario completo y firmado.',back:'← Volver',file:'consent-viewer.html?lang=es'},
+    pt:{title:'FORMULÁRIO ANUAL DE CONSENTIMENTO DOS PAIS',sub:'Obrigatório para todos os participantes do Rise Up',download:'ABRIR / IMPRIMIR FORMULÁRIO',upload:'ENVIAR FORMULÁRIO PREENCHIDO',note:'Envie aqui seu formulário preenchido e assinado.',back:'← Voltar',file:'consent-viewer.html?lang=pt'}
+  };
+  const t=data[lang] || data.en;
+  const set=(id,val)=>{const el=document.getElementById(id); if(el) el.textContent=val;};
+  set('docs-consent-title',t.title);
+  set('docs-consent-sub',t.sub);
+  set('docs-download',t.download);
+  set('docs-upload',t.upload);
+  set('docs-upload-note',t.note);
+  set('docs-back',t.back);
+  const dl=document.getElementById('docs-download');
+  if(dl) dl.href=t.file;
+}
+document.getElementById('documents')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
+document.getElementById('lang-en')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
+document.getElementById('lang-pt')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
+document.getElementById('lang-es')?.addEventListener('click',()=>setTimeout(refreshConsentDocument,0));
+window.addEventListener('load',refreshConsentDocument);
 
 function openRiseUpDeepLink(){
   try{
@@ -1254,4 +1489,16 @@ function openRiseUpDeepLink(){
 window.addEventListener('load',openRiseUpDeepLink);
 
 </script>
+
+<script>
+(function(){
+ const b=document.querySelector('#birthday');
+ if(!b) return;
+ b.addEventListener('input',function(){
+   let d=this.value.replace(/\D/g,'').slice(0,4);
+   this.value=d.length>2?d.slice(0,2)+'/'+d.slice(2):d;
+ });
+})();
+</script>
+
 </body></html>
