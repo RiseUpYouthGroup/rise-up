@@ -1499,6 +1499,27 @@ window.addEventListener('load',openRiseUpDeepLink);
    this.value=d.length>2?d.slice(0,2)+'/'+d.slice(2):d;
  });
 })();
+
+// Direct link to Rise Up Shirt Order: ?open=shirt
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  if ((params.get('open') || '').toLowerCase() === 'shirt') {
+    const openShirtOrder = function () {
+      const quickActions = document.getElementById('quick-actions-modal');
+      const shirtOrder = document.getElementById('shirt-order-modal');
+      if (quickActions) quickActions.classList.remove('open');
+      if (shirtOrder) shirtOrder.classList.add('open');
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(openShirtOrder, 200);
+      });
+    } else {
+      setTimeout(openShirtOrder, 200);
+    }
+  }
+})();
+
 </script>
 
 </body></html>
