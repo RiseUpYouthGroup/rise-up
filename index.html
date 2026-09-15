@@ -308,7 +308,8 @@ window.OneSignalDeferred.push(async function(OneSignal) {
     <img src="zelle-qr.png" alt="Zelle QR code for Rise Up Youth Group donations" style="display:block;width:min(310px,82vw);height:auto;margin:0 auto 18px;border-radius:12px">
     <p style="font-size:13px;line-height:1.5;margin:0 auto 12px;max-width:520px">For your convenience, Zelle donations are collected through the account of one of our Youth Ministry team members, with the authorization of Resurrection Catholic Church.</p>
     <p style="font-size:15px;margin:12px 0 6px"><strong>Zelle recipient: Joao Anna</strong></p>
-    <p style="font-size:12px;margin:0 auto 12px">Please confirm the recipient's name before sending your donation.</p>
+    <p style="font-size:12px;margin:0 auto 8px">Please confirm the recipient's name before sending your donation.</p>
+    <p id="donation-phone-note" style="font-size:13px;line-height:1.5;margin:0 auto 12px;max-width:520px"><strong>Having trouble with the QR Code?</strong> You can also send your Zelle donation directly to <strong>321-203-8538</strong>. Please confirm <strong>Joao Anna</strong> as the recipient before sending.</p>
   </div>
   <div style="margin-top:18px;border-top:1px solid var(--border);padding-top:18px">
     <div id="donation-form-wrap">
@@ -741,7 +742,7 @@ const translations={
     instrumentQ:'What instrument(s) do you play?', submit:'SUBMIT', thanks:'Thanks!', knowThanks:'Now we know you a little better!',
     donationsTitle:'DONATIONS', support:'Support Rise Up Youth Group', donateZelle:'Donate with Zelle',
     donationExplain:'For your convenience, Zelle donations are collected through the account of one of our Youth Ministry team members, with the authorization of Resurrection Catholic Church.',
-    recipient:'Zelle recipient: Joao Anna', confirmRecipient:"Please confirm the recipient's name before sending your donation.",
+    recipient:'Zelle recipient: Joao Anna', confirmRecipient:"Please confirm the recipient's name before sending your donation.", donationPhone:'<strong>Having trouble with the QR Code?</strong> You can also send your Zelle donation directly to <strong>321-203-8538</strong>. Please confirm <strong>Joao Anna</strong> as the recipient before sending.', 
     donationReceiptTitle:'Submit Donation Receipt', donationFamily:'Family / Donor Name', donationAmount:'Donation Amount ($)', donationReceipt:'Zelle Donation Receipt', donationReceiptHelp:'Upload a screenshot, photo, or PDF of your donation confirmation.', donationSubmit:'SUBMIT RECEIPT', donationSuccess:'Thank you!', donationSuccessText:'Your donation receipt has been submitted.',
     docsTitle:'DOCUMENTS', updatesTitle:'IMPORTANT UPDATES', steubTitle:'STEUBENVILLE 2027', fundTitle:'FUNDRAISERS'
   },
@@ -804,7 +805,7 @@ const translations={
     instrumentQ:'Qual instrumento você toca?', submit:'ENVIAR', thanks:'Obrigado!', knowThanks:'Agora conhecemos você um pouco melhor!',
     donationsTitle:'DOAÇÕES', support:'Apoie o Rise Up Youth Group', donateZelle:'Doe com Zelle',
     donationExplain:'Para sua conveniência, as doações via Zelle são recebidas pela conta de um membro da equipe do Ministério Jovem, com autorização da Resurrection Catholic Church.',
-    recipient:'Destinatário no Zelle: Joao Anna', confirmRecipient:'Confirme o nome do destinatário antes de enviar sua doação.',
+    recipient:'Destinatário no Zelle: Joao Anna', confirmRecipient:'Confirme o nome do destinatário antes de enviar sua doação.', donationPhone:'<strong>Não conseguiu usar o QR Code?</strong> Você também pode enviar sua contribuição pelo Zelle diretamente para <strong>321-203-8538</strong>. Confirme que <strong>Joao Anna</strong> aparece como destinatário antes de enviar.',
     donationReceiptTitle:'Enviar Comprovante da Doação', donationFamily:'Nome da Família / Doador', donationAmount:'Valor da Doação (US$)', donationReceipt:'Comprovante da Doação pelo Zelle', donationReceiptHelp:'Envie uma captura de tela, foto ou PDF da confirmação da sua doação.', donationSubmit:'ENVIAR COMPROVANTE', donationSuccess:'Obrigado!', donationSuccessText:'O comprovante da sua doação foi enviado.',
     docsTitle:'DOCUMENTOS', updatesTitle:'AVISOS IMPORTANTES', steubTitle:'STEUBENVILLE 2027', fundTitle:'ARRECADAÇÕES'
   },
@@ -867,7 +868,7 @@ const translations={
     instrumentQ:'¿Qué instrumento(s) tocas?', submit:'ENVIAR', thanks:'¡Gracias!', knowThanks:'¡Ahora te conocemos un poco mejor!',
     donationsTitle:'DONACIONES', support:'Apoya a Rise Up Youth Group', donateZelle:'Dona con Zelle',
     donationExplain:'Para tu comodidad, las donaciones por Zelle se reciben a través de la cuenta de un miembro del equipo del Ministerio Juvenil, con autorización de Resurrection Catholic Church.',
-    recipient:'Destinatario de Zelle: Joao Anna', confirmRecipient:'Confirma el nombre del destinatario antes de enviar tu donación.',
+    recipient:'Destinatario de Zelle: Joao Anna', confirmRecipient:'Confirma el nombre del destinatario antes de enviar tu donación.', donationPhone:'<strong>¿Tienes problemas con el código QR?</strong> También puedes enviar tu donación por Zelle directamente al <strong>321-203-8538</strong>. Confirma que <strong>Joao Anna</strong> aparezca como destinatario antes de enviar.',
     donationReceiptTitle:'Enviar Comprobante de Donación', donationFamily:'Nombre de la Familia / Donante', donationAmount:'Monto de la Donación ($)', donationReceipt:'Comprobante de Donación por Zelle', donationReceiptHelp:'Sube una captura de pantalla, foto o PDF de la confirmación de tu donación.', donationSubmit:'ENVIAR COMPROBANTE', donationSuccess:'¡Gracias!', donationSuccessText:'El comprobante de tu donación ha sido enviado.',
     docsTitle:'DOCUMENTOS', updatesTitle:'AVISOS IMPORTANTES', steubTitle:'STEUBENVILLE 2027', fundTitle:'RECAUDACIONES'
   }
@@ -940,7 +941,7 @@ function setLanguage(lang){
   const dm=document.getElementById('donations-modal');
   if(dm){
     const hs=dm.querySelectorAll('h2,h3'); if(hs[0])hs[0].textContent=t.donationsTitle; if(hs[1])hs[1].textContent=t.donateZelle;
-    const ps=dm.querySelectorAll('p'); if(ps[0])ps[0].textContent=t.support; if(ps[1])ps[1].textContent=t.donationExplain; if(ps[2])ps[2].innerHTML='<strong>'+t.recipient+'</strong>'; if(ps[3])ps[3].textContent=t.confirmRecipient;
+    const ps=dm.querySelectorAll('p'); if(ps[0])ps[0].textContent=t.support; if(ps[1])ps[1].textContent=t.donationExplain; if(ps[2])ps[2].innerHTML='<strong>'+t.recipient+'</strong>'; if(ps[3])ps[3].textContent=t.confirmRecipient; const dpn=document.getElementById('donation-phone-note'); if(dpn)dpn.innerHTML=t.donationPhone;
     txt(document.getElementById('donation-receipt-title'),t.donationReceiptTitle); txt(document.getElementById('donation-family-label'),t.donationFamily); txt(document.getElementById('donation-amount-label'),t.donationAmount); txt(document.getElementById('donation-receipt-label'),t.donationReceipt); txt(document.getElementById('donation-receipt-help'),t.donationReceiptHelp); txt(document.getElementById('donation-submit'),t.donationSubmit); txt(document.getElementById('donation-success-title'),t.donationSuccess); txt(document.getElementById('donation-success-text'),t.donationSuccessText); txt(document.getElementById('donation-success-close'),t.done);
     dm.querySelectorAll('.close').forEach(b=>b.textContent=t.back);
   }
