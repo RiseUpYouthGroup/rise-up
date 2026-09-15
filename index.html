@@ -310,6 +310,19 @@ window.OneSignalDeferred.push(async function(OneSignal) {
     <p style="font-size:15px;margin:12px 0 6px"><strong>Zelle recipient: Joao Anna</strong></p>
     <p style="font-size:12px;margin:0 auto 12px">Please confirm the recipient's name before sending your donation.</p>
   </div>
+  <div style="margin-top:18px;border-top:1px solid var(--border);padding-top:18px">
+    <div id="donation-form-wrap">
+      <h3 id="donation-receipt-title" style="color:var(--navy);margin:0 0 12px">Submit Donation Receipt</h3>
+      <form id="donation-form">
+        <label id="donation-family-label" for="donation-family">Family / Donor Name</label><input id="donation-family" type="text" required autocomplete="name">
+        <label id="donation-amount-label" for="donation-amount">Donation Amount ($)</label><input id="donation-amount" type="number" min="0.01" step="0.01" required inputmode="decimal">
+        <label id="donation-receipt-label" for="donation-receipt">Zelle Donation Receipt</label><input id="donation-receipt" type="file" accept="image/jpeg,image/png,application/pdf" required>
+        <p id="donation-receipt-help" style="font-size:12px;color:var(--muted);margin-top:5px">Upload a screenshot, photo, or PDF of your donation confirmation.</p>
+        <button class="submit" id="donation-submit" type="submit">SUBMIT RECEIPT</button><p id="donation-status" aria-live="polite" style="text-align:center;margin-top:12px"></p>
+      </form>
+    </div>
+    <div id="donation-success" class="hidden" style="text-align:center;padding:16px 0"><h3 id="donation-success-title">Thank you!</h3><p id="donation-success-text">Your donation receipt has been submitted.</p><button class="submit" id="donation-success-close" type="button">DONE</button></div>
+  </div>
   <button class="close" data-close="donations-modal">← Back</button>
 </div></div>
 
@@ -539,6 +552,7 @@ const quickActionsModal=document.getElementById('quick-actions-modal');
 const shirtOrderModal=document.getElementById('shirt-order-modal');
 // Paste the deployed Google Apps Script Web App URL here after setup.
 const SHIRT_ORDER_ENDPOINT='https://script.google.com/macros/s/AKfycbyCiBR8rlMLqiK3J8CKYvJJKyP8ms1iRRo396qvBuCJr8i7utW2F-Kqoa-qXJBat9FFiA/exec';
+const DONATION_ENDPOINT='https://script.google.com/macros/s/AKfycbw5-FFFYW0JQ-3H6MLqQ_45p_T2ua4-bbiA5pR4OPDZ4diOVcZdo270hZbWwuIi3IXA6g/exec';
 
 const installModal=document.getElementById('install-modal');
 const parentRegisterModal=document.getElementById('parent-register-modal');
@@ -728,6 +742,7 @@ const translations={
     donationsTitle:'DONATIONS', support:'Support Rise Up Youth Group', donateZelle:'Donate with Zelle',
     donationExplain:'For your convenience, Zelle donations are collected through the account of one of our Youth Ministry team members, with the authorization of Resurrection Catholic Church.',
     recipient:'Zelle recipient: Joao Anna', confirmRecipient:"Please confirm the recipient's name before sending your donation.",
+    donationReceiptTitle:'Submit Donation Receipt', donationFamily:'Family / Donor Name', donationAmount:'Donation Amount ($)', donationReceipt:'Zelle Donation Receipt', donationReceiptHelp:'Upload a screenshot, photo, or PDF of your donation confirmation.', donationSubmit:'SUBMIT RECEIPT', donationSuccess:'Thank you!', donationSuccessText:'Your donation receipt has been submitted.',
     docsTitle:'DOCUMENTS', updatesTitle:'IMPORTANT UPDATES', steubTitle:'STEUBENVILLE 2027', fundTitle:'FUNDRAISERS'
   },
   pt:{
@@ -790,6 +805,7 @@ const translations={
     donationsTitle:'DOAÇÕES', support:'Apoie o Rise Up Youth Group', donateZelle:'Doe com Zelle',
     donationExplain:'Para sua conveniência, as doações via Zelle são recebidas pela conta de um membro da equipe do Ministério Jovem, com autorização da Resurrection Catholic Church.',
     recipient:'Destinatário no Zelle: Joao Anna', confirmRecipient:'Confirme o nome do destinatário antes de enviar sua doação.',
+    donationReceiptTitle:'Enviar Comprovante da Doação', donationFamily:'Nome da Família / Doador', donationAmount:'Valor da Doação (US$)', donationReceipt:'Comprovante da Doação pelo Zelle', donationReceiptHelp:'Envie uma captura de tela, foto ou PDF da confirmação da sua doação.', donationSubmit:'ENVIAR COMPROVANTE', donationSuccess:'Obrigado!', donationSuccessText:'O comprovante da sua doação foi enviado.',
     docsTitle:'DOCUMENTOS', updatesTitle:'AVISOS IMPORTANTES', steubTitle:'STEUBENVILLE 2027', fundTitle:'ARRECADAÇÕES'
   },
   es:{
@@ -852,6 +868,7 @@ const translations={
     donationsTitle:'DONACIONES', support:'Apoya a Rise Up Youth Group', donateZelle:'Dona con Zelle',
     donationExplain:'Para tu comodidad, las donaciones por Zelle se reciben a través de la cuenta de un miembro del equipo del Ministerio Juvenil, con autorización de Resurrection Catholic Church.',
     recipient:'Destinatario de Zelle: Joao Anna', confirmRecipient:'Confirma el nombre del destinatario antes de enviar tu donación.',
+    donationReceiptTitle:'Enviar Comprobante de Donación', donationFamily:'Nombre de la Familia / Donante', donationAmount:'Monto de la Donación ($)', donationReceipt:'Comprobante de Donación por Zelle', donationReceiptHelp:'Sube una captura de pantalla, foto o PDF de la confirmación de tu donación.', donationSubmit:'ENVIAR COMPROBANTE', donationSuccess:'¡Gracias!', donationSuccessText:'El comprobante de tu donación ha sido enviado.',
     docsTitle:'DOCUMENTOS', updatesTitle:'AVISOS IMPORTANTES', steubTitle:'STEUBENVILLE 2027', fundTitle:'RECAUDACIONES'
   }
 };
@@ -924,6 +941,7 @@ function setLanguage(lang){
   if(dm){
     const hs=dm.querySelectorAll('h2,h3'); if(hs[0])hs[0].textContent=t.donationsTitle; if(hs[1])hs[1].textContent=t.donateZelle;
     const ps=dm.querySelectorAll('p'); if(ps[0])ps[0].textContent=t.support; if(ps[1])ps[1].textContent=t.donationExplain; if(ps[2])ps[2].innerHTML='<strong>'+t.recipient+'</strong>'; if(ps[3])ps[3].textContent=t.confirmRecipient;
+    txt(document.getElementById('donation-receipt-title'),t.donationReceiptTitle); txt(document.getElementById('donation-family-label'),t.donationFamily); txt(document.getElementById('donation-amount-label'),t.donationAmount); txt(document.getElementById('donation-receipt-label'),t.donationReceipt); txt(document.getElementById('donation-receipt-help'),t.donationReceiptHelp); txt(document.getElementById('donation-submit'),t.donationSubmit); txt(document.getElementById('donation-success-title'),t.donationSuccess); txt(document.getElementById('donation-success-text'),t.donationSuccessText); txt(document.getElementById('donation-success-close'),t.done);
     dm.querySelectorAll('.close').forEach(b=>b.textContent=t.back);
   }
 
@@ -1328,6 +1346,17 @@ async function openEvents(){
   }
 }
 
+
+document.getElementById('donation-success-close').addEventListener('click',()=>{donationsModal.classList.remove('open');document.getElementById('donation-success').classList.add('hidden');document.getElementById('donation-form-wrap').classList.remove('hidden');});
+
+document.getElementById('donation-form').addEventListener('submit',async(e)=>{
+  e.preventDefault(); const status=document.getElementById('donation-status'), btn=document.getElementById('donation-submit');
+  if(!DONATION_ENDPOINT){status.textContent=(window.riseUpLang==='pt')?'A página está pronta. Falta conectar o formulário de doações.':(window.riseUpLang==='es')?'La página está lista. Falta conectar el formulario de donaciones.':'This page is ready. The donation form connection still needs to be added.';return;}
+  const file=document.getElementById('donation-receipt').files[0]; if(!file)return; if(file.size>10*1024*1024){status.textContent=(window.riseUpLang==='pt')?'O arquivo deve ter no máximo 10 MB.':(window.riseUpLang==='es')?'El archivo debe tener un máximo de 10 MB.':'File must be 10 MB or smaller.';return;}
+  btn.disabled=true; status.textContent=(window.riseUpLang==='en')?'Submitting…':'Enviando…';
+  try{const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=reject;r.readAsDataURL(file);}); const payload={donorName:document.getElementById('donation-family').value.trim(),amount:document.getElementById('donation-amount').value,fileName:file.name,mimeType:file.type||'application/octet-stream',fileData:data}; await fetch(DONATION_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}); document.getElementById('donation-form-wrap').classList.add('hidden');document.getElementById('donation-success').classList.remove('hidden');e.target.reset();status.textContent='';}
+  catch(err){console.error(err);status.textContent=(window.riseUpLang==='pt')?'Não foi possível enviar. Tente novamente.':(window.riseUpLang==='es')?'No se pudo enviar. Inténtalo de nuevo.':'Could not submit. Please try again.';} finally{btn.disabled=false;}
+});
 
 document.getElementById('shirt-order-form').addEventListener('submit',async(e)=>{
   e.preventDefault();
