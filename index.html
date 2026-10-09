@@ -1250,9 +1250,12 @@ async function openEvents(){
       const card=document.createElement('article');
       card.className='event-card';
 
-      if(ev.imageUrl){
+      const isOct18YouthMass = ev.dateISO === '2026-10-18' && /youth mass|missa jovem|misa juvenil/i.test(ev.title || '');
+      const youthMassFlyers = {en:'youth-mass-oct18-en.png',es:'youth-mass-oct18-es.png',pt:'youth-mass-oct18-pt.png'};
+      const eventFlyer = isOct18YouthMass ? youthMassFlyers[window.riseUpLang||'en'] : ev.imageUrl;
+      if(eventFlyer){
         const img=document.createElement('img');
-        img.src=ev.imageUrl;
+        img.src=eventFlyer;
         img.alt=ev.title ? ev.title+' flyer' : 'Rise Up event flyer';
         img.loading='lazy';
         img.onerror=()=>{ img.style.display='none'; };
@@ -1263,8 +1266,15 @@ async function openEvents(){
       body.className='event-body';
       const h=document.createElement('h3');
       h.className='event-title';
-      h.textContent=ev.title || 'Rise Up Event';
+      h.textContent=isOct18YouthMass ? ({en:'First Youth Mass',es:'Primera Misa Juvenil',pt:'Primeira Missa Jovem'}[window.riseUpLang||'en']) : (ev.title || 'Rise Up Event');
       body.appendChild(h);
+      if(isOct18YouthMass){
+        const details=document.createElement('p');
+        details.className='event-meta';
+        details.style.whiteSpace='pre-line';
+        details.textContent=({en:'10:00 AM — All teens meet at Gleason Hall\n10:30 AM — Youth Mass\n12:00 PM — Youth Group Meeting & Parent Meeting',es:'10:00 AM — Todos los jóvenes en Gleason Hall\n10:30 AM — Misa Juvenil\n12:00 PM — Encuentro del Grupo Juvenil y Reunión de Padres',pt:'10h — Todos os jovens no Gleason Hall\n10h30 — Missa Jovem\n12h — Encontro do Grupo Jovem e Reunião de Pais'}[window.riseUpLang||'en']);
+        body.appendChild(details);
+      }
 
       if(ev.date){
         const d=document.createElement('p');
@@ -1293,7 +1303,7 @@ async function openEvents(){
         if(dateParts.length!==3) return null;
         let h=0,m=0;
         if(timeText){
-          const match=String(timeText).trim().match(/^(\\d{{1,2}}):(\\d{{2}})\\s*(AM|PM)?$/i);
+          const match=String(timeText).trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
           if(match){
             h=Number(match[1]); m=Number(match[2]);
             const ap=(match[3]||'').toUpperCase();
@@ -1320,16 +1330,16 @@ async function openEvents(){
         body.appendChild(rsvp);
       }
 
-      const start=parseEventDate(ev.dateISO,ev.startTime);
+      const start=parseEventDate(ev.dateISO,isOct18YouthMass ? '10:00' : ev.startTime);
       const end=parseEventDate(ev.dateISO,ev.endTime || ev.startTime);
       if(start){
         if(end && end<=start) end.setHours(end.getHours()+1);
         const params=new URLSearchParams({
           action:'TEMPLATE',
-          text:ev.title || 'Rise Up Event',
+          text:isOct18YouthMass ? 'Rise Up - First Youth Mass' : (ev.title || 'Rise Up Event'),
           dates:googleDate(start)+'/'+googleDate(end || new Date(start.getTime()+60*60*1000)),
           location:ev.location || '',
-          details:'Rise Up Youth Group · Resurrection Catholic Church'
+          details:isOct18YouthMass ? '10:00 AM teens at Gleason Hall; 10:30 AM Youth Mass; 12:00 PM Youth Group Meeting and Parent Meeting. End time to be confirmed.' : 'Rise Up Youth Group · Resurrection Catholic Church'
         });
         const a=document.createElement('a');
         a.className='calendar-btn';
