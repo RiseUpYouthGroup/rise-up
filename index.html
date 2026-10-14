@@ -279,7 +279,6 @@ window.OneSignalDeferred.push(async function(OneSignal) {
 <div id="events-modal" class="modal"><div class="sheet">
   <h2>Upcoming Events</h2>
   <p>See what's coming up at Rise Up.</p>
-  
   <div id="events-list" class="event-list"><div class="loading">Loading events…</div></div>
   <button class="close" data-close="events-modal">Close</button>
 </div></div>
@@ -1318,13 +1317,15 @@ async function openEvents(){
       }
 
 
-      // RSVP is intentionally available only in the Teen view.
-      if(!document.body.classList.contains('parent-mode')){
+      // Teen RSVP stays unchanged; parents RSVP separately for the Oct 18 meeting.
+      const parentMode=document.body.classList.contains('parent-mode');
+      if(!parentMode || isOct18YouthMass){
         const rsvp=document.createElement('button');
         rsvp.type='button';
         rsvp.className='rsvp-btn';
-        rsvp.textContent=rsvpText().button;
-        rsvp.addEventListener('click',()=>openRsvp(ev.title || 'Rise Up Event'));
+        const parentLabels={en:'PARENT MEETING RSVP',es:'CONFIRMAR REUNIÓN DE PADRES',pt:'CONFIRMAR REUNIÃO DE PAIS'};
+        rsvp.textContent=parentMode ? (parentLabels[window.riseUpLang||'en']||parentLabels.en) : rsvpText().button;
+        rsvp.addEventListener('click',()=>openRsvp(parentMode ? 'Parent Meeting - October 18, 2026' : (ev.title || 'Rise Up Event')));
         body.appendChild(rsvp);
       }
 
