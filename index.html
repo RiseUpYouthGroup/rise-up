@@ -1282,9 +1282,10 @@ async function openEvents(){
       const card=document.createElement('article');
       card.className='event-card';
 
+      const isTasteItaly = ev.dateISO === '2026-11-06' && /taste of italy|italy|jantar/i.test(ev.title || '');
       const isOct18YouthMass = ev.dateISO === '2026-10-18' && /youth mass|missa jovem|misa juvenil/i.test(ev.title || '');
       const youthMassFlyers = {en:'youth-mass-oct18-en.png',es:'youth-mass-oct18-es.png',pt:'youth-mass-oct18-pt.png'};
-      const eventFlyer = isOct18YouthMass ? youthMassFlyers[window.riseUpLang||'en'] : ev.imageUrl;
+      const eventFlyer = isTasteItaly ? 'taste-of-italy-nov6.png' : (isOct18YouthMass ? youthMassFlyers[window.riseUpLang||'en'] : ev.imageUrl);
       if(eventFlyer){
         const img=document.createElement('img');
         img.src=eventFlyer;
@@ -1354,7 +1355,7 @@ async function openEvents(){
 
       // Teen RSVP stays unchanged; parents RSVP separately for the Oct 18 meeting.
       const parentMode=document.body.classList.contains('parent-mode');
-      if(!parentMode || isOct18YouthMass){
+      if(!isTasteItaly && (!parentMode || isOct18YouthMass)){
         const rsvp=document.createElement('button');
         rsvp.type='button';
         rsvp.className='rsvp-btn';
@@ -1364,16 +1365,25 @@ async function openEvents(){
         body.appendChild(rsvp);
       }
 
-      const start=parseEventDate(ev.dateISO,isOct18YouthMass ? '10:00' : ev.startTime);
-      const end=parseEventDate(ev.dateISO,ev.endTime || ev.startTime);
+      if(isTasteItaly){
+        const ticket=document.createElement('a');
+        ticket.className='calendar-btn';
+        ticket.href='https://www.zeffy.com/en-US/ticketing/rise-up-youth-group-dinner';
+        ticket.target='_blank';
+        ticket.rel='noopener noreferrer';
+        ticket.textContent=({en:'BUY TICKETS — $25',es:'COMPRAR ENTRADAS — $25',pt:'COMPRAR INGRESSOS — $25'}[window.riseUpLang||'en']);
+        body.appendChild(ticket);
+      }
+      const start=parseEventDate(ev.dateISO,isTasteItaly ? '18:00' : (isOct18YouthMass ? '10:00' : ev.startTime));
+      const end=parseEventDate(ev.dateISO,isTasteItaly ? '21:00' : (ev.endTime || ev.startTime));
       if(start){
         if(end && end<=start) end.setHours(end.getHours()+1);
         const params=new URLSearchParams({
           action:'TEMPLATE',
-          text:isOct18YouthMass ? 'Rise Up - First Youth Mass' : (ev.title || 'Rise Up Event'),
+          text:isTasteItaly ? 'Taste of Italy - Rise Up Fundraising Dinner' : (isOct18YouthMass ? 'Rise Up - First Youth Mass' : (ev.title || 'Rise Up Event')),
           dates:googleDate(start)+'/'+googleDate(end || new Date(start.getTime()+60*60*1000)),
           location:ev.location || '',
-          details:isOct18YouthMass ? '10:00 AM teens at Gleason Hall; 10:30 AM Youth Mass; 12:00 PM Youth Group Meeting and Parent Meeting. End time to be confirmed.' : 'Rise Up Youth Group · Resurrection Catholic Church'
+          details:isTasteItaly ? 'Fundraising dinner. Tickets: $25. https://www.zeffy.com/en-US/ticketing/rise-up-youth-group-dinner' : (isOct18YouthMass ? '10:00 AM teens at Gleason Hall; 10:30 AM Youth Mass; 12:00 PM Youth Group Meeting and Parent Meeting. End time to be confirmed.' : 'Rise Up Youth Group · Resurrection Catholic Church')
         });
         const a=document.createElement('a');
         a.className='calendar-btn';
