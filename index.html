@@ -396,10 +396,23 @@ window.OneSignalDeferred.push(async function(OneSignal) {
 </div></div>
 
 <div id="steub-modal" class="modal"><div class="sheet">
-  <div style="text-align:center;padding:38px 12px 28px">
-    <h2 style="font-size:28px;margin:0 0 14px">STEUBENVILLE 2027</h2>
-    <p style="font-style:italic;margin:0">More information will be available soon.</p>
+  <div id="steub-form-wrap">
+    <h2 id="steub-form-title">STEUBENVILLE 2027 – INTEREST FORM</h2>
+    <p id="steub-form-desc">Interested in attending? Leave your family's contact information. This is not a registration or a reserved spot.</p>
+    <form id="steub-interest-form">
+      <label id="steub-teen-label" for="steub-teen">Teen's Full Name</label>
+      <input id="steub-teen" name="teenName" required maxlength="120" autocomplete="name">
+      <label id="steub-parent-label" for="steub-parent">Parent / Guardian Full Name</label>
+      <input id="steub-parent" name="parentName" required maxlength="120">
+      <label id="steub-phone-label" for="steub-phone">Parent / Guardian Phone</label>
+      <input id="steub-phone" name="phone" type="tel" required maxlength="35" autocomplete="tel">
+      <label id="steub-email-label" for="steub-email">Parent / Guardian Email</label>
+      <input id="steub-email" name="email" type="email" required maxlength="150" autocomplete="email">
+      <button class="submit" type="submit" id="steub-submit">SUBMIT INTEREST</button>
+      <p id="steub-status" role="status" aria-live="polite"></p>
+    </form>
   </div>
+  <div id="steub-success" class="hidden" style="text-align:center;padding:28px 8px"><h2 id="steub-success-title">Thank you!</h2><p id="steub-success-desc">Your interest has been submitted.</p></div>
   <button class="close" data-close="steub-modal">← Back</button>
 </div></div>
 
@@ -1124,7 +1137,29 @@ document.querySelectorAll('[data-title]').forEach(btn=>btn.addEventListener('cli
 
 document.getElementById('join').addEventListener('click',()=>joinModal.classList.add('open'));
 document.getElementById('know-you').addEventListener('click',()=>knowModal.classList.add('open'));
-document.getElementById('steubenville').addEventListener('click',()=>steubModal.classList.add('open'));
+document.getElementById('steubenville').addEventListener('click',()=>{updateSteubLanguage();document.getElementById('steub-form-wrap').classList.remove('hidden');document.getElementById('steub-success').classList.add('hidden');steubModal.classList.add('open');});
+
+const STEUB_INTEREST_ENDPOINT='https://script.google.com/macros/s/AKfycby9_ADtGUravlTOKHPhBI-VGoNL7SdSGw3quc7BmnlZYHrFO9RRyE3WkXSS8Zk_887d/exec';
+const steubTranslations={
+ en:['STEUBENVILLE 2027 – INTEREST FORM','Interested in attending? Leave your family’s contact information. This is not a registration or a reserved spot.',"Teen’s Full Name",'Parent / Guardian Full Name','Parent / Guardian Phone','Parent / Guardian Email','SUBMIT INTEREST','Thank you!','Your interest has been submitted.','Sending…','Unable to submit. Please try again.'],
+ es:['STEUBENVILLE 2027 – FORMULARIO DE INTERÉS','¿Te interesa participar? Déjanos los datos de contacto de tu familia. Esto no es una inscripción ni reserva un lugar.','Nombre completo del joven','Nombre completo del padre, madre o tutor','Teléfono del responsable','Correo electrónico del responsable','ENVIAR INTERÉS','¡Gracias!','Hemos recibido tu interés.','Enviando…','No se pudo enviar. Inténtalo de nuevo.'],
+ pt:['STEUBENVILLE 2027 – FORMULÁRIO DE INTERESSE','Tem interesse em participar? Deixe os dados de contato da família. Este formulário não é uma inscrição nem reserva uma vaga.','Nome completo do jovem','Nome completo do responsável','Telefone do responsável','E-mail do responsável','ENVIAR INTERESSE','Obrigado!','Seu interesse foi enviado.','Enviando…','Não foi possível enviar. Tente novamente.']
+};
+function updateSteubLanguage(){
+ const t=steubTranslations[window.riseUpLang]||steubTranslations.en;
+ ['steub-form-title','steub-form-desc','steub-teen-label','steub-parent-label','steub-phone-label','steub-email-label','steub-submit','steub-success-title','steub-success-desc'].forEach((id,i)=>document.getElementById(id).textContent=t[i]);
+}
+document.getElementById('steub-interest-form').addEventListener('submit',async e=>{
+ e.preventDefault();const form=e.currentTarget,button=document.getElementById('steub-submit'),status=document.getElementById('steub-status');
+ const t=steubTranslations[window.riseUpLang]||steubTranslations.en;
+ const payload={teenName:form.elements.teenName.value.trim(),parentName:form.elements.parentName.value.trim(),phone:form.elements.phone.value.trim(),email:form.elements.email.value.trim()};
+ button.disabled=true;status.textContent=t[9];
+ try{
+  await fetch(STEUB_INTEREST_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+  form.reset();document.getElementById('steub-form-wrap').classList.add('hidden');document.getElementById('steub-success').classList.remove('hidden');status.textContent='';
+ }catch(err){status.textContent=t[10];}finally{button.disabled=false;}
+});
+
 document.getElementById('fundraisers').addEventListener('click',()=>fundModal.classList.add('open'));
 document.getElementById('quick-actions').addEventListener('click',()=>quickActionsModal.classList.add('open'));
 document.getElementById('shirt-order-open').addEventListener('click',()=>{quickActionsModal.classList.remove('open');shirtOrderModal.classList.add('open');});
