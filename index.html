@@ -373,6 +373,12 @@ window.OneSignalDeferred.push(async function(OneSignal) {
 </div></div>
 
 <div id="fund-modal" class="modal"><div class="sheet">
+  <section id="italy-fundraiser" style="padding:12px 4px 22px;text-align:center;border-bottom:1px solid var(--border);margin-bottom:22px">
+    <h2 id="italy-fund-title" style="font-size:26px;margin:0 0 8px">TASTE OF ITALY</h2>
+    <p id="italy-fund-desc" style="margin:0 0 12px;color:var(--muted)">Friday, November 6 • 6:00–9:30 PM • $25 per person</p>
+    <img id="italy-fund-poster" src="taste-of-italy-en.png" alt="Taste of Italy fundraising dinner poster" loading="lazy" style="display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--border);margin:0 auto 14px">
+    <a id="italy-fund-buy" class="submit" href="https://www.zeffy.com/en-US/ticketing/rise-up-youth-group-dinner" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center">BUY TICKETS</a>
+  </section>
   <div style="text-align:center;padding:12px 4px 8px">
     <h2 id="fund-title" style="font-size:28px;margin:0 0 6px">HOLIDAY FUNDRAISER</h2>
     <p id="fund-subtitle" style="margin:0 0 12px;color:var(--muted)">Support Rise Up Youth Group Meetings & Retreats</p>
@@ -589,6 +595,17 @@ function fundraiserText(){
   return map[lang] || map.en;
 }
 function refreshFundraiserText(){
+  const lang=['en','es','pt'].includes(window.riseUpLang) ? window.riseUpLang : 'en';
+  const dinner={
+    en:{title:'TASTE OF ITALY',desc:'Friday, November 6 • 6:00–9:30 PM • $25 per person',buy:'BUY TICKETS'},
+    es:{title:'SABORES DE ITALIA',desc:'Viernes, 6 de noviembre • 6:00–9:30 PM • $25 por persona',buy:'COMPRAR BOLETOS'},
+    pt:{title:'SABORES DA ITÁLIA',desc:'Sexta-feira, 6 de novembro • 18h–21h30 • $25 por pessoa',buy:'COMPRAR INGRESSOS'}
+  }[lang];
+  const italyPoster=document.getElementById('italy-fund-poster');
+  if(italyPoster) italyPoster.src='taste-of-italy-'+lang+'.png';
+  const italyTitle=document.getElementById('italy-fund-title');if(italyTitle) italyTitle.textContent=dinner.title;
+  const italyDesc=document.getElementById('italy-fund-desc');if(italyDesc) italyDesc.textContent=dinner.desc;
+  const italyBuy=document.getElementById('italy-fund-buy');if(italyBuy) italyBuy.textContent=dinner.buy;
   const t=fundraiserText();
   const el=(id)=>document.getElementById(id);
   if(el('fund-title')) el('fund-title').textContent=t.title;
@@ -1160,7 +1177,7 @@ document.getElementById('steub-interest-form').addEventListener('submit',async e
  }catch(err){status.textContent=t[10];}finally{button.disabled=false;}
 });
 
-document.getElementById('fundraisers').addEventListener('click',()=>fundModal.classList.add('open'));
+document.getElementById('fundraisers').addEventListener('click',()=>{refreshFundraiserText();fundModal.classList.add('open');});
 document.getElementById('quick-actions').addEventListener('click',()=>quickActionsModal.classList.add('open'));
 document.getElementById('shirt-order-open').addEventListener('click',()=>{quickActionsModal.classList.remove('open');shirtOrderModal.classList.add('open');});
 document.getElementById('shirt-success-close').addEventListener('click',()=>{shirtOrderModal.classList.remove('open');document.getElementById('shirt-success').classList.add('hidden');document.getElementById('shirt-form-wrap').classList.remove('hidden');});
