@@ -1278,16 +1278,24 @@ async function openEvents(){
       return;
     }
     list.innerHTML='';
+    const hasOct25 = data.some(ev=>ev.dateISO === '2026-10-25' || /(?:october\s*25|25\s*(?:de\s*)?(?:octubre|outubro)|10\/25\/2026|25\/10\/2026)/i.test(String(ev.date || '') + ' ' + String(ev.title || '')));
+    if(!hasOct25){
+      data.unshift({title:'Youth Mass and Meeting',dateISO:'2026-10-25',date:'October 25, 2026',startTime:'10:00',endTime:'13:30',location:'Resurrection Catholic Church / Gleason Hall',imageUrl:''});
+    }
     data.forEach(ev=>{
       const card=document.createElement('article');
       card.className='event-card';
 
       // Identify the dinner by its title OR its dedicated flyer URL, independent of date formatting.
       const dinnerIdentity = String(ev.title || '') + ' ' + String(ev.imageUrl || '');
-      const isTasteItaly = /taste[\s_-]*of[\s_-]*italy|taste-of-italy-nov6\.png/i.test(dinnerIdentity);
+      const isTasteItaly = /taste[\s_-]*of[\s_-]*italy|sabores[\s_-]*da[\s_-]*it[aá]lia|sabor[\s_-]*de[\s_-]*italia|taste-of-italy-nov6\.png/i.test(dinnerIdentity);
       const isOct18YouthMass = ev.dateISO === '2026-10-18' && /youth mass|missa jovem|misa juvenil/i.test(ev.title || '');
+      const isOct25YouthMass = ev.dateISO === '2026-10-25' || /(?:october\s*25|25\s*(?:de\s*)?(?:octubre|outubro)|10\/25\/2026|25\/10\/2026)/i.test(String(ev.date || '') + ' ' + String(ev.title || ''));
+      const currentLang = ['en','es','pt'].includes(window.riseUpLang) ? window.riseUpLang : 'en';
+      const dinnerFlyers = {en:'taste-of-italy-en.png',es:'taste-of-italy-es.png',pt:'taste-of-italy-pt.png'};
+      const oct25Flyers = {en:'youth-mass-oct25-en.png',es:'youth-mass-oct25-es.png',pt:'youth-mass-oct25-pt.png'};
       const youthMassFlyers = {en:'youth-mass-oct18-en.png',es:'youth-mass-oct18-es.png',pt:'youth-mass-oct18-pt.png'};
-      const eventFlyer = isTasteItaly ? 'taste-of-italy-nov6.png' : (isOct18YouthMass ? youthMassFlyers[window.riseUpLang||'en'] : ev.imageUrl);
+      const eventFlyer = isTasteItaly ? dinnerFlyers[currentLang] : (isOct25YouthMass ? oct25Flyers[currentLang] : (isOct18YouthMass ? youthMassFlyers[currentLang] : ev.imageUrl));
       if(eventFlyer){
         const img=document.createElement('img');
         img.src=eventFlyer;
@@ -1301,8 +1309,15 @@ async function openEvents(){
       body.className='event-body';
       const h=document.createElement('h3');
       h.className='event-title';
-      h.textContent=isOct18YouthMass ? ({en:'First Youth Mass',es:'Primera Misa Juvenil',pt:'Primeira Missa Jovem'}[window.riseUpLang||'en']) : (ev.title || 'Rise Up Event');
+      h.textContent=isOct25YouthMass ? ({en:'Youth Mass and Meeting',es:'Misa Juvenil y Reunión',pt:'Missa Jovem e Encontro'}[currentLang]) : isOct18YouthMass ? ({en:'First Youth Mass',es:'Primera Misa Juvenil',pt:'Primeira Missa Jovem'}[window.riseUpLang||'en']) : (ev.title || 'Rise Up Event');
       body.appendChild(h);
+      if(isOct25YouthMass){
+        const details=document.createElement('p');
+        details.className='event-meta';
+        details.style.whiteSpace='pre-line';
+        details.textContent=({en:'10:00 AM — All teens at Gleason Hall\n10:30 AM — Youth Mass\n12:00 PM — Youth Group Meeting',es:'10:00 AM — Todos los jóvenes en Gleason Hall\n10:30 AM — Misa juvenil\n12:00 PM — Reunión del grupo juvenil',pt:'10h — Todos os jovens no Gleason Hall\n10h30 — Missa Jovem\n12h — Encontro do Grupo Jovem'}[currentLang]);
+        body.appendChild(details);
+      }
       if(isOct18YouthMass){
         const details=document.createElement('p');
         details.className='event-meta';
@@ -1314,14 +1329,14 @@ async function openEvents(){
       if(ev.date){
         const d=document.createElement('p');
         d.className='event-date';
-        d.textContent=ev.date;
+        d.textContent=isTasteItaly ? ({en:'Friday, November 6, 2026',es:'Viernes 6 de noviembre de 2026',pt:'Sexta-feira, 6 de novembro de 2026'}[currentLang]) : isOct25YouthMass ? ({en:'Sunday, October 25, 2026',es:'Domingo 25 de octubre de 2026',pt:'Domingo, 25 de outubro de 2026'}[currentLang]) : ev.date;
         body.appendChild(d);
       }
 
       if(ev.startTime || ev.endTime){
         const tm=document.createElement('p');
         tm.className='event-meta';
-        tm.textContent=[ev.startTime,ev.endTime].filter(Boolean).join(' – ');
+        tm.textContent=isTasteItaly ? '6:00 PM – 9:30 PM' : isOct25YouthMass ? '10:00 AM – 1:30 PM' : [ev.startTime,ev.endTime].filter(Boolean).join(' – ');
         body.appendChild(tm);
       }
 
@@ -1376,16 +1391,16 @@ async function openEvents(){
         ticket.textContent=({en:'BUY TICKETS — $25',es:'COMPRAR ENTRADAS — $25',pt:'COMPRAR INGRESSOS — $25'}[window.riseUpLang||'en']);
         body.appendChild(ticket);
       }
-      const start=parseEventDate(isTasteItaly ? '2026-11-06' : ev.dateISO,isTasteItaly ? '18:00' : (isOct18YouthMass ? '10:00' : ev.startTime));
-      const end=parseEventDate(isTasteItaly ? '2026-11-06' : ev.dateISO,isTasteItaly ? '21:00' : (ev.endTime || ev.startTime));
+      const start=parseEventDate(isTasteItaly ? '2026-11-06' : (isOct25YouthMass ? '2026-10-25' : ev.dateISO),isTasteItaly ? '18:00' : (isOct25YouthMass || isOct18YouthMass ? '10:00' : ev.startTime));
+      const end=parseEventDate(isTasteItaly ? '2026-11-06' : (isOct25YouthMass ? '2026-10-25' : ev.dateISO),isTasteItaly ? '21:30' : (isOct25YouthMass ? '13:30' : (ev.endTime || ev.startTime)));
       if(start){
         if(end && end<=start) end.setHours(end.getHours()+1);
         const params=new URLSearchParams({
           action:'TEMPLATE',
-          text:isTasteItaly ? 'Taste of Italy - Rise Up Fundraising Dinner' : (isOct18YouthMass ? 'Rise Up - First Youth Mass' : (ev.title || 'Rise Up Event')),
+          text:isTasteItaly ? 'Taste of Italy - Rise Up Fundraising Dinner' : (isOct25YouthMass ? 'Rise Up - Youth Mass and Meeting' : (isOct18YouthMass ? 'Rise Up - First Youth Mass' : (ev.title || 'Rise Up Event'))),
           dates:googleDate(start)+'/'+googleDate(end || new Date(start.getTime()+60*60*1000)),
           location:ev.location || '',
-          details:isTasteItaly ? 'Fundraising dinner. Tickets: $25. https://www.zeffy.com/en-US/ticketing/rise-up-youth-group-dinner' : (isOct18YouthMass ? '10:00 AM teens at Gleason Hall; 10:30 AM Youth Mass; 12:00 PM Youth Group Meeting and Parent Meeting. End time to be confirmed.' : 'Rise Up Youth Group · Resurrection Catholic Church')
+          details:isTasteItaly ? 'Fundraising dinner. Tickets: $25. https://www.zeffy.com/en-US/ticketing/rise-up-youth-group-dinner' : (isOct25YouthMass ? '10:00 AM Gleason Hall; 10:30 AM Youth Mass; 12:00 PM Youth Group Meeting.' : (isOct18YouthMass ? '10:00 AM teens at Gleason Hall; 10:30 AM Youth Mass; 12:00 PM Youth Group Meeting and Parent Meeting. End time to be confirmed.' : 'Rise Up Youth Group · Resurrection Catholic Church'))
         });
         const a=document.createElement('a');
         a.className='calendar-btn';
