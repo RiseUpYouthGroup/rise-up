@@ -1295,9 +1295,9 @@ async function openEvents(){
       return;
     }
     list.innerHTML='';
-    const hasOct25 = data.some(ev=>ev.dateISO === '2026-10-25' || /(?:october\s*25|25\s*(?:de\s*)?(?:octubre|outubro)|10\/25\/2026|25\/10\/2026)/i.test(String(ev.date || '') + ' ' + String(ev.title || '')));
-    if(!hasOct25){
-      data.unshift({title:'Youth Mass and Meeting',dateISO:'2026-10-25',date:'October 25, 2026',startTime:'10:00',endTime:'13:30',location:'Resurrection Catholic Church / Gleason Hall',imageUrl:''});
+    const hasNov8 = data.some(ev=>ev.dateISO === '2026-11-08' || /(?:november\s*8|8\s*(?:de\s*)?(?:noviembre|novembro)|11\/08\/2026|08\/11\/2026)/i.test(String(ev.date || '') + ' ' + String(ev.title || '')));
+    if(!hasNov8){
+      data.unshift({title:'Youth Mass',dateISO:'2026-11-08',date:'November 8, 2026',startTime:'10:00',endTime:'11:30',location:'Resurrection Catholic Church / Gleason Hall',imageUrl:''});
     }
     data.forEach(ev=>{
       const card=document.createElement('article');
@@ -1306,13 +1306,15 @@ async function openEvents(){
       // Identify the dinner by its title OR its dedicated flyer URL, independent of date formatting.
       const dinnerIdentity = String(ev.title || '') + ' ' + String(ev.imageUrl || '');
       const isTasteItaly = /taste[\s_-]*of[\s_-]*italy|sabores[\s_-]*da[\s_-]*it[aá]lia|sabor[\s_-]*de[\s_-]*italia|taste-of-italy-nov6\.png/i.test(dinnerIdentity);
+      const isNov8YouthMass = ev.dateISO === '2026-11-08' || /(?:november\s*8|8\s*(?:de\s*)?(?:noviembre|novembro)|11\/08\/2026|08\/11\/2026)/i.test(String(ev.date || '') + ' ' + String(ev.title || ''));
       const isOct18YouthMass = ev.dateISO === '2026-10-18' && /youth mass|missa jovem|misa juvenil/i.test(ev.title || '');
       const isOct25YouthMass = ev.dateISO === '2026-10-25' || /(?:october\s*25|25\s*(?:de\s*)?(?:octubre|outubro)|10\/25\/2026|25\/10\/2026)/i.test(String(ev.date || '') + ' ' + String(ev.title || ''));
       const currentLang = ['en','es','pt'].includes(window.riseUpLang) ? window.riseUpLang : 'en';
+      const nov8Flyers = {en:'youth-mass-nov8-en.jpg',es:'youth-mass-nov8-es.jpg',pt:'youth-mass-nov8-pt.jpg'};
       const dinnerFlyers = {en:'taste-of-italy-en.png',es:'taste-of-italy-es.png',pt:'taste-of-italy-pt.png'};
       const oct25Flyers = {en:'youth-mass-oct25-en.png',es:'youth-mass-oct25-es.png',pt:'youth-mass-oct25-pt.png'};
       const youthMassFlyers = {en:'youth-mass-oct18-en.png',es:'youth-mass-oct18-es.png',pt:'youth-mass-oct18-pt.png'};
-      const eventFlyer = isTasteItaly ? dinnerFlyers[currentLang] : (isOct25YouthMass ? oct25Flyers[currentLang] : (isOct18YouthMass ? youthMassFlyers[currentLang] : ev.imageUrl));
+      const eventFlyer = isNov8YouthMass ? nov8Flyers[currentLang] : isTasteItaly ? dinnerFlyers[currentLang] : (isOct25YouthMass ? oct25Flyers[currentLang] : (isOct18YouthMass ? youthMassFlyers[currentLang] : ev.imageUrl));
       if(eventFlyer){
         const img=document.createElement('img');
         img.src=eventFlyer;
@@ -1326,8 +1328,15 @@ async function openEvents(){
       body.className='event-body';
       const h=document.createElement('h3');
       h.className='event-title';
-      h.textContent=isOct25YouthMass ? ({en:'Youth Mass and Meeting',es:'Misa Juvenil y Reunión',pt:'Missa Jovem e Encontro'}[currentLang]) : isOct18YouthMass ? ({en:'First Youth Mass',es:'Primera Misa Juvenil',pt:'Primeira Missa Jovem'}[window.riseUpLang||'en']) : (ev.title || 'Rise Up Event');
+      h.textContent=isNov8YouthMass ? ({en:'Youth Mass',es:'Misa Juvenil',pt:'Missa Jovem'}[currentLang]) : isOct25YouthMass ? ({en:'Youth Mass and Meeting',es:'Misa Juvenil y Reunión',pt:'Missa Jovem e Encontro'}[currentLang]) : isOct18YouthMass ? ({en:'First Youth Mass',es:'Primera Misa Juvenil',pt:'Primeira Missa Jovem'}[window.riseUpLang||'en']) : (ev.title || 'Rise Up Event');
       body.appendChild(h);
+      if(isNov8YouthMass){
+        const details=document.createElement('p');
+        details.className='event-meta';
+        details.style.whiteSpace='pre-line';
+        details.textContent=({en:'10:00 AM — All youth arrive at Gleason Hall\n10:30 AM — Youth Mass',es:'10:00 AM — Todos los jóvenes llegan al Gleason Hall\n10:30 AM — Misa Juvenil',pt:'10h — Chegada de todos os jovens ao Gleason Hall\n10h30 — Missa Jovem'}[currentLang]);
+        body.appendChild(details);
+      }
       if(isOct25YouthMass){
         const details=document.createElement('p');
         details.className='event-meta';
@@ -1346,14 +1355,14 @@ async function openEvents(){
       if(ev.date){
         const d=document.createElement('p');
         d.className='event-date';
-        d.textContent=isTasteItaly ? ({en:'Friday, November 6, 2026',es:'Viernes 6 de noviembre de 2026',pt:'Sexta-feira, 6 de novembro de 2026'}[currentLang]) : isOct25YouthMass ? ({en:'Sunday, October 25, 2026',es:'Domingo 25 de octubre de 2026',pt:'Domingo, 25 de outubro de 2026'}[currentLang]) : ev.date;
+        d.textContent=isNov8YouthMass ? ({en:'Sunday, November 8, 2026',es:'Domingo, 8 de noviembre de 2026',pt:'Domingo, 8 de novembro de 2026'}[currentLang]) : isTasteItaly ? ({en:'Friday, November 6, 2026',es:'Viernes 6 de noviembre de 2026',pt:'Sexta-feira, 6 de novembro de 2026'}[currentLang]) : isOct25YouthMass ? ({en:'Sunday, October 25, 2026',es:'Domingo 25 de octubre de 2026',pt:'Domingo, 25 de outubro de 2026'}[currentLang]) : ev.date;
         body.appendChild(d);
       }
 
       if(ev.startTime || ev.endTime){
         const tm=document.createElement('p');
         tm.className='event-meta';
-        tm.textContent=isTasteItaly ? '6:00 PM – 9:30 PM' : isOct25YouthMass ? '10:00 AM – 1:30 PM' : [ev.startTime,ev.endTime].filter(Boolean).join(' – ');
+        tm.textContent=isNov8YouthMass ? ({en:'Youth arrival: 10:00 AM | Mass: 10:30 AM',es:'Llegada: 10:00 AM | Misa: 10:30 AM',pt:'Chegada: 10h | Missa: 10h30'}[currentLang]) : isTasteItaly ? '6:00 PM – 9:30 PM' : isOct25YouthMass ? '10:00 AM – 1:30 PM' : [ev.startTime,ev.endTime].filter(Boolean).join(' – ');
         body.appendChild(tm);
       }
 
