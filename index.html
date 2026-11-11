@@ -1329,18 +1329,20 @@ async function openEvents(){
       // Identify the dinner by its title OR its dedicated flyer URL, independent of date formatting.
       const dinnerIdentity = String(ev.title || '') + ' ' + String(ev.imageUrl || '');
       const isTasteItaly = /taste[\s_-]*of[\s_-]*italy|sabores[\s_-]*da[\s_-]*it[aá]lia|sabor[\s_-]*de[\s_-]*italia|taste-of-italy-nov6\.png/i.test(dinnerIdentity);
+      const isNov15YouthMass = eventDay(ev) === '2026-11-15' && /youth mass|missa jovem|misa juvenil/i.test(String(ev.title || ''));
       const isNov8YouthMass = eventDay(ev) === '2026-11-08' && /youth mass|missa jovem|misa juvenil/i.test(String(ev.title || ''));
       const isOct18YouthMass = ev.dateISO === '2026-10-18' && /youth mass|missa jovem|misa juvenil/i.test(ev.title || '');
       const isOct25YouthMass = eventDay(ev) === '2026-10-25' && /youth mass|missa jovem|misa juvenil/i.test(String(ev.title || ''));
       const currentLang = ['en','es','pt'].includes(window.riseUpLang) ? window.riseUpLang : 'en';
+      const nov15Flyers = {en:'youth-mass-nov15-en.png',es:'youth-mass-nov15-es.png',pt:'youth-mass-nov15-pt.png'};
       const nov8Flyers = {en:'youth-mass-nov8-en.jpg',es:'youth-mass-nov8-es.jpg',pt:'youth-mass-nov8-pt.jpg'};
       const dinnerFlyers = {en:'taste-of-italy-en.png',es:'taste-of-italy-es.png',pt:'taste-of-italy-pt.png'};
       const oct25Flyers = {en:'youth-mass-oct25-en.png',es:'youth-mass-oct25-es.png',pt:'youth-mass-oct25-pt.png'};
       const youthMassFlyers = {en:'youth-mass-oct18-en.png',es:'youth-mass-oct18-es.png',pt:'youth-mass-oct18-pt.png'};
-      const eventFlyer = isNov8YouthMass ? nov8Flyers[currentLang] : isTasteItaly ? dinnerFlyers[currentLang] : (isOct25YouthMass ? oct25Flyers[currentLang] : (isOct18YouthMass ? youthMassFlyers[currentLang] : ev.imageUrl));
+      const eventFlyer = isNov15YouthMass ? nov15Flyers[currentLang] : isNov8YouthMass ? nov8Flyers[currentLang] : isTasteItaly ? dinnerFlyers[currentLang] : (isOct25YouthMass ? oct25Flyers[currentLang] : (isOct18YouthMass ? youthMassFlyers[currentLang] : ev.imageUrl));
       if(eventFlyer){
         const img=document.createElement('img');
-        img.src = eventFlyer.startsWith('http') ? eventFlyer : new URL(eventFlyer, document.baseURI).href + '?v=49';
+        img.src = eventFlyer.startsWith('http') ? eventFlyer : new URL(eventFlyer, document.baseURI).href + '?v=51';
         img.alt=ev.title ? ev.title+' flyer' : 'Rise Up event flyer';
         img.loading='lazy';
         img.onerror=()=>{ img.style.display='none'; console.warn('Rise Up: image unavailable',img.src); };
@@ -1351,8 +1353,15 @@ async function openEvents(){
       body.className='event-body';
       const h=document.createElement('h3');
       h.className='event-title';
-      h.textContent=isNov8YouthMass ? ({en:'Youth Mass',es:'Misa Juvenil',pt:'Missa Jovem'}[currentLang]) : isOct25YouthMass ? ({en:'Youth Mass and Meeting',es:'Misa Juvenil y Reunión',pt:'Missa Jovem e Encontro'}[currentLang]) : isOct18YouthMass ? ({en:'First Youth Mass',es:'Primera Misa Juvenil',pt:'Primeira Missa Jovem'}[window.riseUpLang||'en']) : (ev.title || 'Rise Up Event');
+      h.textContent=isNov15YouthMass ? ({en:'Youth Mass and Meeting',es:'Misa Juvenil y Encuentro',pt:'Missa Jovem e Encontro'}[currentLang]) : isNov8YouthMass ? ({en:'Youth Mass',es:'Misa Juvenil',pt:'Missa Jovem'}[currentLang]) : isOct25YouthMass ? ({en:'Youth Mass and Meeting',es:'Misa Juvenil y Reunión',pt:'Missa Jovem e Encontro'}[currentLang]) : isOct18YouthMass ? ({en:'First Youth Mass',es:'Primera Misa Juvenil',pt:'Primeira Missa Jovem'}[window.riseUpLang||'en']) : (ev.title || 'Rise Up Event');
       body.appendChild(h);
+      if(isNov15YouthMass){
+        const details=document.createElement('p');
+        details.className='event-meta';
+        details.style.whiteSpace='pre-line';
+        details.textContent=({en:'10:00 AM — All youth meet in Gleason Hall\n10:30 AM — Youth Mass\n12:00 PM — Youth Group Meeting',es:'10:00 AM — Todos los jóvenes en Gleason Hall\n10:30 AM — Misa Juvenil\n12:00 PM — Encuentro del Grupo Juvenil',pt:'10h — Todos os jovens no Gleason Hall\n10h30 — Missa Jovem\n12h — Encontro do Grupo Jovem'}[currentLang]);
+        body.appendChild(details);
+      }
       if(isNov8YouthMass){
         const details=document.createElement('p');
         details.className='event-meta';
@@ -1378,14 +1387,14 @@ async function openEvents(){
       if(ev.date){
         const d=document.createElement('p');
         d.className='event-date';
-        d.textContent=isNov8YouthMass ? ({en:'Sunday, November 8, 2026',es:'Domingo, 8 de noviembre de 2026',pt:'Domingo, 8 de novembro de 2026'}[currentLang]) : isTasteItaly ? ({en:'Friday, November 6, 2026',es:'Viernes 6 de noviembre de 2026',pt:'Sexta-feira, 6 de novembro de 2026'}[currentLang]) : isOct25YouthMass ? ({en:'Sunday, October 25, 2026',es:'Domingo 25 de octubre de 2026',pt:'Domingo, 25 de outubro de 2026'}[currentLang]) : ev.date;
+        d.textContent=isNov15YouthMass ? ({en:'Sunday, November 15, 2026',es:'Domingo, 15 de noviembre de 2026',pt:'Domingo, 15 de novembro de 2026'}[currentLang]) : isNov8YouthMass ? ({en:'Sunday, November 8, 2026',es:'Domingo, 8 de noviembre de 2026',pt:'Domingo, 8 de novembro de 2026'}[currentLang]) : isTasteItaly ? ({en:'Friday, November 6, 2026',es:'Viernes 6 de noviembre de 2026',pt:'Sexta-feira, 6 de novembro de 2026'}[currentLang]) : isOct25YouthMass ? ({en:'Sunday, October 25, 2026',es:'Domingo 25 de octubre de 2026',pt:'Domingo, 25 de outubro de 2026'}[currentLang]) : ev.date;
         body.appendChild(d);
       }
 
       if(ev.startTime || ev.endTime){
         const tm=document.createElement('p');
         tm.className='event-meta';
-        tm.textContent=isNov8YouthMass ? ({en:'Youth arrival: 10:00 AM | Mass: 10:30 AM',es:'Llegada: 10:00 AM | Misa: 10:30 AM',pt:'Chegada: 10h | Missa: 10h30'}[currentLang]) : isTasteItaly ? '6:00 PM – 9:30 PM' : isOct25YouthMass ? '10:00 AM – 1:30 PM' : [ev.startTime,ev.endTime].filter(Boolean).join(' – ');
+        tm.textContent=isNov15YouthMass ? ({en:'10:00 AM – 1:30 PM',es:'10:00 AM – 1:30 PM',pt:'10h – 13h30'}[currentLang]) : isNov8YouthMass ? ({en:'Youth arrival: 10:00 AM | Mass: 10:30 AM',es:'Llegada: 10:00 AM | Misa: 10:30 AM',pt:'Chegada: 10h | Missa: 10h30'}[currentLang]) : isTasteItaly ? '6:00 PM – 9:30 PM' : isOct25YouthMass ? '10:00 AM – 1:30 PM' : [ev.startTime,ev.endTime].filter(Boolean).join(' – ');
         body.appendChild(tm);
       }
 
